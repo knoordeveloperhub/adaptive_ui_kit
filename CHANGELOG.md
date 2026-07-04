@@ -1,6 +1,6 @@
 ## 0.0.2
 
-* TODO: fixing readme assets issue.
+* TODO: Fix readme assets issue.
 
 
 ## 0.0.1
