@@ -139,7 +139,7 @@ Glass UI   Material UI
 ### Overview
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/knoordeveloperhub/adaptive_ui_kit/main/assets/screenshots/overview.png" width="300">
+  <img src="https://raw.githubusercontent.com/knoordeveloperhub/adaptive_ui_kit/main/assets/screenshots/overview.png" width="220">
 </p>
 
 ### Adaptive Dialog
