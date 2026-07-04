@@ -1,11 +1,11 @@
 # Adaptive UI Kit
 
-<p align="center">
-A powerful Flutter package for building beautiful **platform-adaptive user interfaces** with a single API.
-</p>
+[![pub package](https://img.shields.io/pub/v/adaptive_ui_kit.svg)](https://pub.dev/packages/adaptive_ui_kit)
+![Platform](https://img.shields.io/badge/platform-Flutter-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
 
 <p align="center">
-🍎 Apple-inspired Glass UI • 🤖 Material 3 • 🚀 Zero Dependencies • 💙 Pure Flutter
+A powerful Flutter package for building beautiful **platform-adaptive user interfaces** with a single API.
 </p>
 
 ---
