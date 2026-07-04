@@ -1,1 +1,14 @@
 TODO: Add your license here.
+
+---
+
+## Pub.dev ko aur attractive banane ke liye ye zaroor add karo
+
+Top me badges:
+
+```md
+[![pub package](https://img.shields.io/pub/v/adaptive_ui_kit.svg)](https://pub.dev/packages/adaptive_ui_kit)
+
+![Platform](https://img.shields.io/badge/platform-Flutter-blue)
+
+![License](https://img.shields.io/badge/license-MIT-green)
