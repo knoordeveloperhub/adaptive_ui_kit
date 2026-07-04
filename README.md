@@ -30,7 +30,7 @@ No platform checks. No duplicate widgets.
 ## 🎬 Demo
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/knoordeveloperhub/adaptive_ui_kit/main/assets/screenshots/demo.gif" width="280">
+  <img src="https://raw.githubusercontent.com/knoordeveloperhub/adaptive_ui_kit/main/assets/screenshots/demo.gif" width="220">
 </p>
 
 ---
