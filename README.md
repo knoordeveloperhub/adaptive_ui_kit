@@ -145,12 +145,15 @@ Glass UI   Material UI
 
 ### Date Picker
 
-| ![](assets/screenshots/date_picker_glass.png) | ![](assets/screenshots/date_picker_material.png) |
+| iOS (Glass) | Android (Material) |
+|-------------|---------------------|
+| <img src="assets/screenshots/date_picker_glass.png" width="250"> | <img src="assets/screenshots/date_picker_material.png" width="250"> |
 
 ### Time Picker
 
-| ![](assets/screenshots/time_picker_glass.png) | ![](assets/screenshots/time_picker_material.png) |
-
+| iOS (Glass) | Android (Material) |
+|-------------|---------------------|
+| <img src="assets/screenshots/time_picker_glass.png" width="250"> | <img src="assets/screenshots/time_picker_material.png" width="250"> |
 ---
 
 # Example
