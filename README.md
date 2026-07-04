@@ -29,7 +29,9 @@ No platform checks. No duplicate widgets.
 
 ## 🎬 Demo
 
-![](assets/screenshots/demo.gif)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/knoordeveloperhub/adaptive_ui_kit/main/assets/screenshots/demo.gif" width="280">
+</p>
 
 ---
 
@@ -52,7 +54,7 @@ No platform checks. No duplicate widgets.
 
 ```yaml
 dependencies:
-  adaptive_ui_kit: ^0.0.3
+  adaptive_ui_kit: ^0.0.4
 ```
 
 ```bash
@@ -136,24 +138,24 @@ Glass UI   Material UI
 
 ### Overview
 
-| <img src="assets/screenshots/overview.png" width="250"> |
+<p align="center">
+  <img src="https://raw.githubusercontent.com/knoordeveloperhub/adaptive_ui_kit/main/assets/screenshots/overview.png" width="300">
+</p>
 
 ### Adaptive Dialog
 
 | iOS (Glass) | Android (Material) |
 |-------------|--------------------| 
 
-### Date Picker
 
-| iOS (Glass) | Android (Material) |
-|-------------|---------------------|
-| <img src="assets/screenshots/date_picker_glass.png" width="250"> | <img src="assets/screenshots/date_picker_material.png" width="250"> |
+### Date Picker
+ 
+| <img src="https://raw.githubusercontent.com/knoordeveloperhub/adaptive_ui_kit/main/assets/screenshots/date_picker_glass.png" width="220"> | <img src="https://raw.githubusercontent.com/knoordeveloperhub/adaptive_ui_kit/main/assets/screenshots/date_picker_material.png" width="220"> |
 
 ### Time Picker
+ 
+| <img src="https://raw.githubusercontent.com/knoordeveloperhub/adaptive_ui_kit/main/assets/screenshots/time_picker_glass.png" width="220"> | <img src="https://raw.githubusercontent.com/knoordeveloperhub/adaptive_ui_kit/main/assets/screenshots/time_picker_material.png" width="220"> |
 
-| iOS (Glass) | Android (Material) |
-|-------------|---------------------|
-| <img src="assets/screenshots/time_picker_glass.png" width="250"> | <img src="assets/screenshots/time_picker_material.png" width="250"> |
 ---
 
 # Example

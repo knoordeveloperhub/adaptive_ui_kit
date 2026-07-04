@@ -1,3 +1,7 @@
+## 0.0.4
+
+* TODO: Bug fixed.
+
 ## 0.0.3
 
 * TODO: Screenshot view issue fix on pubdev.
