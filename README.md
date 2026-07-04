@@ -136,7 +136,7 @@ Glass UI   Material UI
 
 ### Overview
 
-![Overview](assets/screenshots/overview.png)
+| <img src="assets/screenshots/overview.png" width="250"> |
 
 ### Adaptive Dialog
 
