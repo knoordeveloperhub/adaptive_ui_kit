@@ -52,7 +52,7 @@ No platform checks. No duplicate widgets.
 
 ```yaml
 dependencies:
-  adaptive_ui_kit: ^0.0.2
+  adaptive_ui_kit: ^0.0.3
 ```
 
 ```bash

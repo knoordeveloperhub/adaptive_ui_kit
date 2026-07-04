@@ -1,6 +1,6 @@
 name: adaptive_ui_kit
 description: "A Flutter package for building platform-adaptive UIs with automatic switching between Glass (iOS/macOS) and Material (Android) design systems. Includes dialogs, action sheets, date/time pickers, and multi-select components."
-version: 0.0.2
+version: 0.0.3
 homepage: https://github.com/knoordeveloperhub/adaptive_ui_kit
 repository: https://github.com/knoordeveloperhub/adaptive_ui_kit
 issue_tracker: https://github.com/knoordeveloperhub/adaptive_ui_kit/issues
