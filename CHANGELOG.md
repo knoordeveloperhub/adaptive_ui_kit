@@ -1,3 +1,6 @@
+## 0.0.5
+- Fixed package description length for pub.dev score
+
 ## 0.0.4
 
 * TODO: Bug fixed.
