@@ -2,15 +2,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../config/adaptive_ui_kit_config.dart';
 import '../config/ui_kit_labels.dart';
-import '../models/multi_select_option.dart';
+import '../widgets/multi_select_option.dart';
 import '../layout/responsive_layout.dart';
-import 'glass_dialog.dart';
+import '../uitils/glass_colors.dart';
+import '../widgets/liquid_glass_panel.dart';
 
 /// iOS 26 style multi-select sheet
 class LiquidGlassMultiSelect {
   static Future<List<String>?> show({
     required BuildContext context,
-    required String title,
+    String? title,
+    Widget? titleWidget,
+    TextStyle? titleStyle,
     required List<MultiSelectOption> options,
     List<String> initiallySelected = const [],
     UiKitLabels labels = UiKitLabels.defaultLabels,
@@ -22,6 +25,8 @@ class LiquidGlassMultiSelect {
       barrierColor: Colors.black.withValues(alpha: 0.20),
       builder: (ctx) => _LiquidGlassMultiSelectSheet(
         title: title,
+        titleWidget: titleWidget,
+        titleStyle: titleStyle,
         options: options,
         initiallySelected: initiallySelected,
         labels: labels,
@@ -31,13 +36,17 @@ class LiquidGlassMultiSelect {
 }
 
 class _LiquidGlassMultiSelectSheet extends StatefulWidget {
-  final String title;
+  final String? title;
+  final Widget? titleWidget;
+  final TextStyle? titleStyle;
   final List<MultiSelectOption> options;
   final List<String> initiallySelected;
   final UiKitLabels labels;
 
   const _LiquidGlassMultiSelectSheet({
-    required this.title,
+    this.title,
+    this.titleWidget,
+    this.titleStyle,
     required this.options,
     required this.initiallySelected,
     required this.labels,
@@ -106,14 +115,18 @@ class _LiquidGlassMultiSelectSheetState
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        widget.title,
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: GlassColors.text(context),
-                        ),
-                      ),
+                      widget.titleWidget ??
+                          (widget.title != null
+                              ? Text(
+                                  widget.title!,
+                                  style: widget.titleStyle ??
+                                      TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                        color: GlassColors.text(context),
+                                      ),
+                                )
+                              : const SizedBox.shrink()),
                       GestureDetector(
                         onTap: () =>
                             Navigator.of(context).pop(_selected.toList()),
@@ -184,13 +197,16 @@ class _LiquidGlassMultiSelectSheetState
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text(
-                                          option.label,
-                                          style: TextStyle(
-                                            fontSize: 15,
-                                            color: GlassColors.text(context),
-                                          ),
-                                        ),
+                                        option.child ??
+                                            Text(
+                                              option.label,
+                                              style: option.labelStyle ??
+                                                  TextStyle(
+                                                    fontSize: 15,
+                                                    color: GlassColors.text(
+                                                        context),
+                                                  ),
+                                            ),
                                         if (isSelected)
                                           Icon(
                                             CupertinoIcons.check_mark,

@@ -54,7 +54,7 @@ No platform checks. No duplicate widgets.
 
 ```yaml
 dependencies:
-  adaptive_ui_kit: ^0.0.5
+  adaptive_ui_kit: ^0.0.6
 ```
 
 ```bash
@@ -85,7 +85,90 @@ await AdaptiveActionSheet.show(
     ),
   ],
 );
+
+## Passing full widgets and styles
+
+You can pass full widgets instead of plain text for titles, messages, and items. Dialogs also support an optional secondary message with style control.
+
+```dart
+await AdaptiveDialog.showConfirm(
+  context: context,
+  title: 'Delete',
+  titleWidget: Row(children: [Icon(Icons.delete), SizedBox(width:8), Text('Delete')]),
+  messageWidget: Text('Are you sure?'),
+  secondaryMessage: 'This cannot be undone',
+  secondaryMessageStyle: TextStyle(color: Colors.red),
+);
+
+await AdaptiveActionSheet.show(
+  context: context,
+  title: 'Options',
+  items: [
+    ActionSheetItem(label: 'Share', icon: Icons.share, onTap: () {}, child: Row(children: [Icon(Icons.share), SizedBox(width:8), Text('Share via...')])),
+  ],
+);
 ```
+
+## Project Status
+
+- Latest changes: dialogs, action-sheets, multi-selects, date & time pickers now accept full-widget overrides (`titleWidget`, `messageWidget`, `child`, etc.) and optional TextStyle parameters. The adaptive wrappers (`AdaptiveDialog`, `AdaptiveActionSheet`, `AdaptiveMultiSelect`, `AdaptiveDateTimePicker`, `AdaptiveTimePicker`) propagate these options to both Glass and Material implementations.
+- Example app updated: `example/lib/main.dart` includes widget-only examples and demos of the new APIs.
+- Static analysis: `flutter analyze` reports no issues after the updates.
+
+## Integration Guide
+
+To integrate Adaptive UI Kit into your Flutter project:
+
+1. Add the package to `pubspec.yaml`:
+
+```yaml
+dependencies:
+  adaptive_ui_kit: any
+```
+
+2. Import the package:
+
+```dart
+import 'package:adaptive_ui_kit/adaptive_ui_kit.dart';
+```
+
+3. Optionally configure global theming before `runApp`:
+
+```dart
+AdaptiveUiKitConfig.glass = AdaptiveUiKitConfig.glass.copyWith(
+  tintColor: Colors.indigo,
+  destructiveColor: Colors.red,
+);
+```
+
+4. Replace or add UI calls using the adaptive API. Examples:
+
+```dart
+await AdaptiveDialog.showConfirm(
+  context: context,
+  // either pass plain text:
+  title: 'Confirm',
+  message: 'Proceed?'
+  // or pass widgets instead:
+  titleWidget: Row(children: [Icon(Icons.info), Text('Confirm')]),
+);
+
+await AdaptiveActionSheet.show(
+  context: context,
+  titleWidget: Text('Options'),
+  items: [ActionSheetItem(label: 'Edit', icon: Icons.edit, onTap: () {})],
+);
+
+final selected = await AdaptiveMultiSelect.show(
+  context: context,
+  titleWidget: Text('Choose'),
+  options: [MultiSelectOption(id: '1', label: 'One', child: Text('One'))],
+);
+```
+
+Notes:
+- For Material date/time pickers you can pass `helpText`, `cancelText`, `confirmText`, and a `builder` for custom theme wrapping.
+- Widgets take precedence: if `titleWidget`/`messageWidget`/`child` are provided they'll be used instead of string fallbacks.
 
 ---
 
@@ -175,7 +258,6 @@ flutter run
 - Adaptive Navigation Components
 - Adaptive Form Controls
 - Adaptive Search Bar
-- Adaptive Bottom Navigation
 
 ---
 

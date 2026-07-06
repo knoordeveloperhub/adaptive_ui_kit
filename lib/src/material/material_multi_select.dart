@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../config/adaptive_ui_kit_config.dart';
 import '../config/ui_kit_labels.dart';
-import '../models/multi_select_option.dart';
+import '../widgets/multi_select_option.dart';
 import '../layout/responsive_layout.dart';
 
 final _pillShape = RoundedRectangleBorder(
@@ -12,7 +12,9 @@ final _pillShape = RoundedRectangleBorder(
 class MaterialMultiSelectSheet {
   static Future<List<String>?> show({
     required BuildContext context,
-    required String title,
+    String? title,
+    Widget? titleWidget,
+    TextStyle? titleStyle,
     required List<MultiSelectOption> options,
     List<String> initiallySelected = const [],
     UiKitLabels labels = UiKitLabels.defaultLabels,
@@ -52,10 +54,14 @@ class MaterialMultiSelectSheet {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              title,
-                              style: Theme.of(ctx).textTheme.titleMedium,
-                            ),
+                            titleWidget ??
+                                (title != null
+                                    ? Text(
+                                        title,
+                                        style: titleStyle ??
+                                            Theme.of(ctx).textTheme.titleMedium,
+                                      )
+                                    : const SizedBox.shrink()),
                             TextButton(
                               style: TextButton.styleFrom(shape: _pillShape),
                               onPressed: () =>
@@ -87,7 +93,11 @@ class MaterialMultiSelectSheet {
                                 child: CheckboxListTile(
                                   shape: _pillShape,
                                   value: isSelected,
-                                  title: Text(option.label),
+                                  title: option.child ??
+                                      Text(
+                                        option.label,
+                                        style: option.labelStyle,
+                                      ),
                                   controlAffinity:
                                       ListTileControlAffinity.trailing,
                                   onChanged: (_) {

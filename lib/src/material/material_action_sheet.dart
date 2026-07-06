@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../config/adaptive_ui_kit_config.dart';
-import '../models/action_sheet_item.dart';
+import '../widgets/action_sheet_item.dart';
 import '../layout/responsive_layout.dart';
 
 final _pillShape = RoundedRectangleBorder(
@@ -12,6 +12,8 @@ class MaterialActionSheet {
   static Future<void> show({
     required BuildContext context,
     String? title,
+    Widget? titleWidget,
+    TextStyle? titleStyle,
     required List<ActionSheetItem> items,
   }) {
     final theme = Theme.of(context);
@@ -50,14 +52,23 @@ class MaterialActionSheet {
                       borderRadius: BorderRadius.circular(4),
                     ),
                   ),
-                  if (title != null)
+                  if (titleWidget != null)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: titleWidget,
+                      ),
+                    )
+                  else if (title != null)
                     Padding(
                       padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
                       child: Align(
                         alignment: Alignment.centerLeft,
                         child: Text(
                           title,
-                          style: Theme.of(ctx).textTheme.titleMedium,
+                          style:
+                              titleStyle ?? Theme.of(ctx).textTheme.titleMedium,
                         ),
                       ),
                     ),
@@ -100,14 +111,17 @@ class MaterialActionSheet {
                                                   : scheme.onSurface,
                                             ),
                                             const SizedBox(width: 12),
-                                            Text(
-                                              item.label,
-                                              style: TextStyle(
-                                                color: item.isDestructive
-                                                    ? scheme.error
-                                                    : scheme.onSurface,
-                                              ),
-                                            ),
+                                            item.child ??
+                                                Text(
+                                                  item.label,
+                                                  style: item.labelStyle ??
+                                                      TextStyle(
+                                                        color: item
+                                                                .isDestructive
+                                                            ? scheme.error
+                                                            : scheme.onSurface,
+                                                      ),
+                                                ),
                                           ],
                                         ),
                                       ),

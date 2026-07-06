@@ -10,6 +10,11 @@ class AdaptiveTimePicker {
     required BuildContext context,
     TimeOfDay? initialTime,
     UiKitLabels labels = UiKitLabels.defaultLabels,
+    String? cancelText,
+    String? confirmText,
+    String? helpText,
+    TimePickerEntryMode? initialEntryMode,
+    Widget Function(BuildContext, Widget?)? builder,
     AdaptiveUiKit? uiKit,
   }) {
     switch (resolveUiKit(context, uiKit)) {
@@ -23,6 +28,11 @@ class AdaptiveTimePicker {
         return MaterialTimeSheet.show(
           context: context,
           initialTime: initialTime,
+          cancelText: cancelText,
+          confirmText: confirmText,
+          helpText: helpText,
+          initialEntryMode: initialEntryMode,
+          builder: builder,
         );
     }
   }

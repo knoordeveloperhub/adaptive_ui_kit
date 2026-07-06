@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
-import '../models/action_sheet_item.dart';
+import '../widgets/action_sheet_item.dart';
 import '../layout/responsive_layout.dart';
 import '../config/adaptive_ui_kit_config.dart';
-import 'glass_dialog.dart';
+import '../uitils/glass_colors.dart';
+import '../widgets/liquid_glass_panel.dart';
 
 /// iOS 26 style action sheet
 class LiquidGlassActionSheet {
   static Future<void> show({
     required BuildContext context,
     String? title,
+    Widget? titleWidget,
+    TextStyle? titleStyle,
     required List<ActionSheetItem> items,
   }) {
     return showModalBottomSheet<void>(
@@ -42,14 +45,19 @@ class LiquidGlassActionSheet {
                         borderRadius: BorderRadius.circular(4),
                       ),
                     ),
-                    if (title != null) ...[
+                    if (titleWidget != null) ...[
+                      Align(
+                          alignment: Alignment.centerLeft, child: titleWidget),
+                      const SizedBox(height: 8),
+                    ] else if (title != null) ...[
                       Text(
                         title,
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                          color: GlassColors.textMuted(ctx),
-                        ),
+                        style: titleStyle ??
+                            TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
+                              color: GlassColors.textMuted(ctx),
+                            ),
                       ),
                       const SizedBox(height: 8),
                     ],
@@ -88,27 +96,32 @@ class LiquidGlassActionSheet {
                                         ),
                                         child: Row(
                                           children: [
-                                            Icon(
-                                              item.icon,
-                                              size: 19,
-                                              color: item.isDestructive
-                                                  ? AdaptiveUiKitConfig
-                                                        .glass
-                                                        .destructiveColor
-                                                  : GlassColors.text(ctx),
-                                            ),
-                                            const SizedBox(width: 10),
-                                            Text(
-                                              item.label,
-                                              style: TextStyle(
-                                                fontSize: 15,
+                                            if (item.child != null) ...[
+                                              item.child!,
+                                            ] else ...[
+                                              Icon(
+                                                item.icon,
+                                                size: 19,
                                                 color: item.isDestructive
                                                     ? AdaptiveUiKitConfig
-                                                          .glass
-                                                          .destructiveColor
+                                                        .glass.destructiveColor
                                                     : GlassColors.text(ctx),
                                               ),
-                                            ),
+                                              const SizedBox(width: 10),
+                                              Text(
+                                                item.label,
+                                                style: item.labelStyle ??
+                                                    TextStyle(
+                                                      fontSize: 15,
+                                                      color: item.isDestructive
+                                                          ? AdaptiveUiKitConfig
+                                                              .glass
+                                                              .destructiveColor
+                                                          : GlassColors.text(
+                                                              ctx),
+                                                    ),
+                                              ),
+                                            ],
                                           ],
                                         ),
                                       ),

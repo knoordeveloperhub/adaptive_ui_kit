@@ -15,6 +15,12 @@ class AdaptiveDateTimePicker {
     DateTime? minimumDate,
     DateTime? maximumDate,
     ValueChanged<DateTime>? onChanged,
+    String? helpText,
+    String? cancelText,
+    String? confirmText,
+    String? fieldLabelText,
+    String? fieldHintText,
+    Widget Function(BuildContext, Widget?)? builder,
     AdaptiveUiKit? uiKit,
   }) {
     switch (resolveUiKit(context, uiKit)) {
@@ -33,6 +39,12 @@ class AdaptiveDateTimePicker {
           initialDate: initialDate,
           minimumDate: minimumDate,
           maximumDate: maximumDate,
+          helpText: helpText,
+          cancelText: cancelText,
+          confirmText: confirmText,
+          fieldLabelText: fieldLabelText,
+          fieldHintText: fieldHintText,
+          builder: builder,
         );
     }
   }

@@ -8,13 +8,25 @@ class MaterialDateSheet {
     DateTime? initialDate,
     DateTime? minimumDate,
     DateTime? maximumDate,
+    String? helpText,
+    String? cancelText,
+    String? confirmText,
+    String? fieldLabelText,
+    String? fieldHintText,
+    Widget Function(BuildContext, Widget?)? builder,
   }) {
     return showDatePicker(
       context: context,
       initialDate: initialDate ?? DateTime.now(),
       firstDate: minimumDate ?? DateTime(1990),
       lastDate: maximumDate ?? DateTime(2100),
-      builder: (ctx, child) => _wrapWithMaterialSurfaceTheme(ctx, child),
+      helpText: helpText,
+      cancelText: cancelText,
+      confirmText: confirmText,
+      fieldLabelText: fieldLabelText,
+      fieldHintText: fieldHintText,
+      builder:
+          builder ?? (ctx, child) => _wrapWithMaterialSurfaceTheme(ctx, child),
     );
   }
 }

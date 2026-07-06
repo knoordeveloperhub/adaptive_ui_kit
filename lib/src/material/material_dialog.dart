@@ -10,8 +10,15 @@ final _pillShape = RoundedRectangleBorder(
 class MaterialConfirmDialog {
   static Future<bool?> showConfirm({
     required BuildContext context,
-    required String title,
-    required String message,
+    String? title,
+    String? message,
+    Widget? titleWidget,
+    Widget? messageWidget,
+    String? secondaryMessage,
+    Widget? secondaryMessageWidget,
+    TextStyle? titleStyle,
+    TextStyle? messageStyle,
+    TextStyle? secondaryMessageStyle,
     String confirmText = 'Confirm',
     String cancelText = 'Cancel',
     bool isDestructive = false,
@@ -34,8 +41,26 @@ class MaterialConfirmDialog {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(28),
               ),
-              title: Text(title),
-              content: Text(message),
+              title: titleWidget ??
+                  (title != null ? Text(title, style: titleStyle) : null),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (messageWidget != null)
+                    messageWidget
+                  else if (message != null)
+                    Text(message, style: messageStyle)
+                  else
+                    const SizedBox.shrink(),
+                  if (secondaryMessage != null ||
+                      secondaryMessageWidget != null) ...[
+                    const SizedBox(height: 8),
+                    secondaryMessageWidget ??
+                        Text(secondaryMessage ?? '',
+                            style: secondaryMessageStyle),
+                  ],
+                ],
+              ),
               actions: [
                 TextButton(
                   style: TextButton.styleFrom(shape: _pillShape),

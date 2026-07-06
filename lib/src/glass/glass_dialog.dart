@@ -1,167 +1,8 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../config/adaptive_ui_kit_config.dart';
 import '../layout/responsive_layout.dart';
-
-// =======================================================================
-// iOS 26 LIQUID GLASS KIT - Helper Colors
-// =======================================================================
-class GlassColors {
-  static Color surface(BuildContext context) {
-    final t = AdaptiveUiKitConfig.glass;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Colors.white.withValues(
-      alpha: isDark ? t.surfaceOpacityDark : t.surfaceOpacityLight,
-    );
-  }
-
-  static Color border(BuildContext context) {
-    final t = AdaptiveUiKitConfig.glass;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Colors.white.withValues(
-      alpha: isDark ? t.borderOpacityDark : t.borderOpacityLight,
-    );
-  }
-
-  /// Bright top edge - the specular highlight that sells the glass look.
-  static Color highlight(BuildContext context) {
-    final t = AdaptiveUiKitConfig.glass;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Colors.white.withValues(
-      alpha: isDark ? t.highlightOpacityDark : t.highlightOpacityLight,
-    );
-  }
-
-  static Color rowFill(BuildContext context) {
-    final t = AdaptiveUiKitConfig.glass;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Colors.white.withValues(
-      alpha: isDark ? t.rowFillOpacityDark : t.rowFillOpacityLight,
-    );
-  }
-
-  static Color text(BuildContext context) {
-    final t = AdaptiveUiKitConfig.glass;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return isDark ? t.textColorDark : t.textColorLight;
-  }
-
-  static Color textMuted(BuildContext context) {
-    final t = AdaptiveUiKitConfig.glass;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return isDark ? t.textMutedColorDark : t.textMutedColorLight;
-  }
-}
-
-/// Reusable glass panel: blur + tint + specular border + shadow.
-/// radius default (32) matches iOS 26's rounder "concentric" corners.
-class LiquidGlassPanel extends StatelessWidget {
-  final Widget child;
-  final double? radius;
-  final bool topOnly;
-  final EdgeInsetsGeometry? padding;
-
-  /// radius defaults to [AdaptiveUiKitConfig.glass.dialogRadius] when null -
-  /// pass null (the default) unless this one panel needs a custom size.
-  const LiquidGlassPanel({
-    super.key,
-    required this.child,
-    this.radius,
-    this.topOnly = false,
-    this.padding,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final t = AdaptiveUiKitConfig.glass;
-    final effectiveRadius = radius ?? t.dialogRadius;
-    final borderRadius = topOnly
-        ? BorderRadius.vertical(top: Radius.circular(effectiveRadius))
-        : BorderRadius.circular(effectiveRadius);
-
-    return ClipRRect(
-      borderRadius: borderRadius,
-      child: BackdropFilter(
-        filter: ImageFilter.compose(
-          outer: ImageFilter.blur(sigmaX: t.blurSigma, sigmaY: t.blurSigma),
-          inner: ColorFilter.matrix(<double>[
-            t.saturationBoost,
-            0,
-            0,
-            0,
-            0,
-            0,
-            t.saturationBoost,
-            0,
-            0,
-            0,
-            0,
-            0,
-            t.saturationBoost,
-            0,
-            0,
-            0,
-            0,
-            0,
-            1,
-            0,
-          ]),
-        ),
-        child: Stack(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                color: GlassColors.surface(context),
-                borderRadius: borderRadius,
-                border: Border.all(
-                  color: GlassColors.border(context),
-                  width: t.borderWidth,
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: t.shadowColor.withValues(alpha: 0.16),
-                    blurRadius: t.shadowBlur,
-                    offset: t.shadowOffset,
-                  ),
-                ],
-              ),
-              child: Material(
-                type: MaterialType.transparency,
-                child: Padding(
-                  padding: padding ?? EdgeInsets.zero,
-                  child: child,
-                ),
-              ),
-            ),
-            // Specular highlight: soft bright streak along the top edge
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: IgnorePointer(
-                child: Container(
-                  height: t.highlightStreakHeight,
-                  margin: EdgeInsets.symmetric(
-                    horizontal: effectiveRadius * 0.4,
-                  ),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [
-                        Colors.transparent,
-                        GlassColors.highlight(context),
-                        Colors.transparent,
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+import '../uitils/glass_colors.dart';
+import '../widgets/liquid_glass_panel.dart';
 
 /// Mirrors Apple's iOS 26 button styles:
 /// - `.glass`           -> translucent capsule (secondary actions)
@@ -255,8 +96,15 @@ class _GlassEntryAnimationState extends State<_GlassEntryAnimation>
 class LiquidGlassDialog {
   static Future<bool?> showConfirm({
     required BuildContext context,
-    required String title,
-    required String message,
+    String? title,
+    String? message,
+    Widget? titleWidget,
+    Widget? messageWidget,
+    String? secondaryMessage,
+    Widget? secondaryMessageWidget,
+    TextStyle? titleStyle,
+    TextStyle? messageStyle,
+    TextStyle? secondaryMessageStyle,
     String confirmText = 'Confirm',
     String cancelText = 'Cancel',
     bool isDestructive = false,
@@ -278,24 +126,46 @@ class LiquidGlassDialog {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(
-                      title,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w600,
-                        color: GlassColors.text(ctx),
-                      ),
-                    ),
+                    titleWidget ??
+                        (title != null
+                            ? Text(
+                                title,
+                                textAlign: TextAlign.center,
+                                style: titleStyle ??
+                                    TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.w600,
+                                      color: GlassColors.text(ctx),
+                                    ),
+                              )
+                            : const SizedBox.shrink()),
                     const SizedBox(height: 6),
-                    Text(
-                      message,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: GlassColors.textMuted(ctx),
-                      ),
-                    ),
+                    messageWidget ??
+                        (message != null
+                            ? Text(
+                                message,
+                                textAlign: TextAlign.center,
+                                style: messageStyle ??
+                                    TextStyle(
+                                      fontSize: 14,
+                                      color: GlassColors.textMuted(ctx),
+                                    ),
+                              )
+                            : const SizedBox.shrink()),
+                    if (secondaryMessage != null ||
+                        secondaryMessageWidget != null) ...[
+                      const SizedBox(height: 8),
+                      secondaryMessageWidget ??
+                          Text(
+                            secondaryMessage ?? '',
+                            textAlign: TextAlign.center,
+                            style: secondaryMessageStyle ??
+                                TextStyle(
+                                  fontSize: 13,
+                                  color: GlassColors.textMuted(ctx),
+                                ),
+                          ),
+                    ],
                     const SizedBox(height: 16),
                     Row(
                       children: [

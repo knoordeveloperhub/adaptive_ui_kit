@@ -1,3 +1,7 @@
+## 0.0.6
+- Added Bottom Navigation Bar.
+- Added custom attributes to all widgets for enhanced customization and control.
+
 ## 0.0.5
 - Fixed package description length for pub.dev score
 

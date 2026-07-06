@@ -6,11 +6,21 @@ class MaterialTimeSheet {
   static Future<TimeOfDay?> show({
     required BuildContext context,
     TimeOfDay? initialTime,
+    String? cancelText,
+    String? confirmText,
+    String? helpText,
+    TimePickerEntryMode? initialEntryMode,
+    Widget Function(BuildContext, Widget?)? builder,
   }) {
     return showTimePicker(
       context: context,
       initialTime: initialTime ?? TimeOfDay.now(),
-      builder: (ctx, child) => _wrapWithMaterialSurfaceTheme(ctx, child),
+      cancelText: cancelText,
+      confirmText: confirmText,
+      helpText: helpText,
+      initialEntryMode: initialEntryMode ?? TimePickerEntryMode.dial,
+      builder:
+          builder ?? (ctx, child) => _wrapWithMaterialSurfaceTheme(ctx, child),
     );
   }
 }

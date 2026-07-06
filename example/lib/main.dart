@@ -47,6 +47,8 @@ class ExampleScreen extends StatefulWidget {
 class _ExampleScreenState extends State<ExampleScreen> {
   AdaptiveUiKit? _forcedUiKit;
   String _selectedItems = 'None';
+  int _selectedTab = 0;
+  bool _showLabels = true;
 
   String get _uiModeLabel {
     if (_forcedUiKit == null) return 'Auto (platform default)';
@@ -106,12 +108,13 @@ class _ExampleScreenState extends State<ExampleScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
       appBar: AppBar(
         title: const Text('Adaptive UI Kit Example'),
         elevation: 0,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -121,6 +124,39 @@ class _ExampleScreenState extends State<ExampleScreen> {
             ),
             const SizedBox(height: 24),
             _buildUiModeSelector(context),
+            const SizedBox(height: 16),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Navigation Bar',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Scroll down to see content continue behind the floating bar.',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: 12),
+                    SwitchListTile.adaptive(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text('Show labels'),
+                      value: _showLabels,
+                      onChanged: (value) => setState(() => _showLabels = value),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Selected tab: ${_selectedTab + 1}',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
             _buildSection(
               title: 'Date Picker',
               description:
@@ -155,6 +191,45 @@ class _ExampleScreenState extends State<ExampleScreen> {
                   'Shows a multi-select sheet (Glass on iOS/macOS, Material on Android)',
               onPressed: () => _showMultiSelect(context),
             ),
+            const SizedBox(height: 16),
+            Card(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Widget-only Examples',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Examples showing usage with only widget overrides (no plain text).',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () =>
+                              _showConfirmDialogWidgetOnly(context),
+                          child: const Text('Dialog (widgets only)'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () => _showActionSheetWidgetOnly(context),
+                          child: const Text('Action Sheet (widget title)'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () => _showMultiSelectWidgetOnly(context),
+                          child: const Text('Multi-Select (widgets)'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
             const SizedBox(height: 24),
             Card(
               child: Padding(
@@ -174,6 +249,33 @@ class _ExampleScreenState extends State<ExampleScreen> {
             ),
           ],
         ),
+      ),
+      bottomNavigationBar: AdaptiveNavigationBar(
+        currentIndex: _selectedTab,
+        showLabels: _showLabels,
+        onTap: (index) => setState(() => _selectedTab = index),
+        items: const [
+          AdaptiveNavItem(
+            icon: Icons.home_outlined,
+            activeIcon: Icons.home,
+            label: 'Home',
+          ),
+          AdaptiveNavItem(
+            icon: Icons.search_outlined,
+            activeIcon: Icons.search,
+            label: 'Search',
+          ),
+          AdaptiveNavItem(
+            icon: Icons.person_outline,
+            activeIcon: Icons.person,
+            label: 'Profile',
+          ),
+          AdaptiveNavItem(
+            icon: Icons.settings_outlined,
+            activeIcon: Icons.settings,
+            label: 'Settings',
+          ),
+        ],
       ),
     );
   }
@@ -217,6 +319,24 @@ class _ExampleScreenState extends State<ExampleScreen> {
       context: context,
       title: 'Confirm Action',
       message: 'Do you want to proceed with this action?',
+      // widget overrides: you can pass full widgets instead of plain text
+      titleWidget: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const Icon(Icons.info_outline, size: 18),
+          const SizedBox(width: 8),
+          Text('Confirm Action', style: TextStyle(fontWeight: FontWeight.w700)),
+        ],
+      ),
+      messageWidget: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: const [
+          Text('Do you want to proceed with this action?'),
+        ],
+      ),
+      // secondary message with style control
+      secondaryMessage: 'This action cannot be undone.',
+      secondaryMessageStyle: const TextStyle(color: Colors.redAccent),
       confirmText: 'Yes',
       cancelText: 'No',
     );
@@ -237,10 +357,18 @@ class _ExampleScreenState extends State<ExampleScreen> {
           icon: CupertinoIcons.photo,
           onTap: () => _showSnackBar('Edit tapped'),
         ),
+        // custom child widget example
         ActionSheetItem(
           label: 'Share',
           icon: CupertinoIcons.share,
           onTap: () => _showSnackBar('Share tapped'),
+          child: Row(
+            children: const [
+              Icon(CupertinoIcons.share, size: 18),
+              SizedBox(width: 10),
+              Text('Share via...'),
+            ],
+          ),
         ),
         ActionSheetItem(
           label: 'Delete',
@@ -256,6 +384,10 @@ class _ExampleScreenState extends State<ExampleScreen> {
     final date = await AdaptiveDateTimePicker.showDate(
       context: context,
       initialDate: DateTime.now(),
+      // material-specific label overrides (no-op on glass UI)
+      helpText: 'Pick a date',
+      cancelText: 'Back',
+      confirmText: 'Select',
     );
     if (date != null) {
       _showSnackBar(
@@ -267,6 +399,8 @@ class _ExampleScreenState extends State<ExampleScreen> {
     final time = await AdaptiveTimePicker.show(
       context: context,
       initialTime: TimeOfDay.now(),
+      cancelText: 'Close',
+      confirmText: 'OK',
     );
     if (time != null) {
       _showSnackBar('Selected time: ${time.toString()}');
@@ -279,7 +413,17 @@ class _ExampleScreenState extends State<ExampleScreen> {
       title: 'Select items',
       options: [
         const MultiSelectOption(id: '1', label: 'Option 1'),
-        const MultiSelectOption(id: '2', label: 'Option 2'),
+        MultiSelectOption(
+          id: '2',
+          label: 'Option 2',
+          child: Row(
+            children: const [
+              Icon(Icons.star, size: 18, color: Colors.amber),
+              SizedBox(width: 8),
+              Text('Starred option'),
+            ],
+          ),
+        ),
         const MultiSelectOption(id: '3', label: 'Option 3'),
         const MultiSelectOption(id: '4', label: 'Option 4'),
       ],
@@ -290,6 +434,67 @@ class _ExampleScreenState extends State<ExampleScreen> {
       });
       _showSnackBar('Selected: ${selected.join(", ")}');
     }
+  }
+
+  Future<void> _showConfirmDialogWidgetOnly(BuildContext context) async {
+    final result = await AdaptiveDialog.showConfirm(
+      context: context,
+      // no `title` or `message` strings passed — widgets only
+      titleWidget: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const [
+          Icon(Icons.warning, color: Colors.orange),
+          SizedBox(width: 8),
+          Text('Widget Title', style: TextStyle(fontWeight: FontWeight.w700)),
+        ],
+      ),
+      messageWidget: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: const [
+          Text('This dialog was shown with widgets only.'),
+        ],
+      ),
+      confirmText: 'OK',
+      cancelText: 'Close',
+    );
+    _showSnackBar(
+        'Dialog result: ${result == true ? 'Confirmed' : 'Cancelled'}');
+  }
+
+  Future<void> _showActionSheetWidgetOnly(BuildContext context) async {
+    await AdaptiveActionSheet.show(
+      context: context,
+      // pass a widget for the title only
+      titleWidget: Text('Widget Title for Action Sheet',
+          style: TextStyle(fontWeight: FontWeight.w600)),
+      items: [
+        ActionSheetItem(
+            label: 'One',
+            icon: Icons.looks_one,
+            onTap: () => _showSnackBar('One')),
+        ActionSheetItem(
+            label: 'Two',
+            icon: Icons.looks_two,
+            onTap: () => _showSnackBar('Two')),
+      ],
+    );
+  }
+
+  Future<void> _showMultiSelectWidgetOnly(BuildContext context) async {
+    final selected = await AdaptiveMultiSelect.show(
+      context: context,
+      // widget-only title
+      titleWidget: Row(children: const [
+        Icon(Icons.list),
+        SizedBox(width: 8),
+        Text('Choose')
+      ]),
+      options: [
+        MultiSelectOption(id: 'a', label: 'A', child: const Text('Alpha')),
+        MultiSelectOption(id: 'b', label: 'B', child: const Text('Beta')),
+      ],
+    );
+    _showSnackBar('Selected (widget-only): ${selected?.join(', ') ?? 'none'}');
   }
 
   void _showSnackBar(String message) {

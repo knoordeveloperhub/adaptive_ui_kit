@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import '../config/adaptive_ui_kit_config.dart';
 import '../config/ui_kit_labels.dart';
 import '../layout/responsive_layout.dart';
-import 'glass_dialog.dart';
+import '../uitils/glass_colors.dart';
+import '../widgets/liquid_glass_panel.dart';
 
 /// Custom scroll-wheel time picker (hour / minute / AM-PM) with a glass
 /// "selection band" fixed in the middle
