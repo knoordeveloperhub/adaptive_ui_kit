@@ -1,5 +1,7 @@
 export 'src/adaptive/adaptive_dialog.dart';
 export 'src/adaptive/adaptive_action_sheet.dart';
+export 'src/glass/glass_dialog.dart';
+export 'src/glass/glass_navigation_bar.dart';
 export 'src/adaptive/adaptive_date_picker.dart';
 export 'src/adaptive/adaptive_time_picker.dart';
 export 'src/adaptive/adaptive_multi_select.dart';

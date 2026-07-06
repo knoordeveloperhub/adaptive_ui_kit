@@ -15,6 +15,7 @@ class GlassNavigationBar extends StatefulWidget {
     this.onTap,
     this.showLabels = true,
     required this.items,
+    this.backgroundColor,
   });
 
   /// The index of the currently selected item.
@@ -28,6 +29,11 @@ class GlassNavigationBar extends StatefulWidget {
 
   /// The items displayed in the navigation bar.
   final List<AdaptiveNavItem> items;
+
+  /// Optional solid background color for the navigation bar.
+  ///
+  /// When null, the bar keeps the default translucent glass look.
+  final Color? backgroundColor;
 
   @override
   State<GlassNavigationBar> createState() => _GlassNavigationBarState();
@@ -107,133 +113,208 @@ class _GlassNavigationBarState extends State<GlassNavigationBar> {
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(36),
-          child: BackdropFilter(
-            // Slightly stronger blur than before, but paired with a much
-            // lighter fill below so the blurred content actually shows
-            // through — that's what reads as "glass" instead of "frosted
-            // solid panel".
-            // Compose a saturation boost with the blur so background colours
-            // stay vivid through the glass (real Liquid Glass content behind
-            // the bar reads as blurred-but-colourful, never grey-washed).
-            // NOTE ON TESTING: this effect is only visible where there's
-            // colour/contrast behind the bar to reveal. Plain white cards on
-            // a light-grey Scaffold background (low-contrast, near-monochrome)
-            // will look "invisible" through the glass at almost any blur/alpha
-            // setting - there's simply nothing colourful to blur into view.
-            // Test against a photo, a coloured banner, or saturated text to
-            // properly judge this effect.
-            filter: ImageFilter.compose(
-              outer: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-              inner: ColorFilter.matrix(_saturationMatrix(1.35)),
-            ),
-            child: Container(
-              height: hasVisibleLabels ? 68 : 56,
-              decoration: BoxDecoration(
-                // Very low fill opacity - this is the single biggest lever
-                // for the "true glass" look. Too much fill here (anything
-                // above ~0.08-0.10) hides the blurred backdrop and makes it
-                // read as a flat frosted panel instead of transparent glass.
-                color: isDark
-                    ? Colors.black.withValues(alpha: 0.22)
-                    : Colors.white.withValues(alpha: 0.09),
-                borderRadius: BorderRadius.circular(36),
-                border: Border.all(
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.18)
-                      : Colors.white.withValues(alpha: 0.65),
-                  width: 0.75,
-                ),
-              ),
-              child: Stack(
-                children: [
-                  LayoutBuilder(
-                    builder: (context, constraints) {
-                      final barWidth = constraints.maxWidth;
-                      final itemWidth = barWidth / widget.items.length;
-                      final dragging = _dragX != null;
-                      final activeIndex = dragging
-                          ? _indexAt(_dragX!, barWidth)
-                          : widget.currentIndex;
-                      final capsuleLeft = dragging
-                          ? (_dragX! - itemWidth / 2)
-                              .clamp(0.0, barWidth - itemWidth)
-                          : widget.currentIndex * itemWidth;
+          child: widget.backgroundColor != null
+              ? Container(
+                  height: hasVisibleLabels ? 68 : 56,
+                  decoration: BoxDecoration(
+                    color: widget.backgroundColor,
+                    borderRadius: BorderRadius.circular(36),
+                    border: Border.all(
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.18)
+                          : Colors.white.withValues(alpha: 0.65),
+                      width: 0.75,
+                    ),
+                  ),
+                  child: Stack(
+                    children: [
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final barWidth = constraints.maxWidth;
+                          final itemWidth = barWidth / widget.items.length;
+                          final dragging = _dragX != null;
+                          final activeIndex = dragging
+                              ? _indexAt(_dragX!, barWidth)
+                              : widget.currentIndex;
+                          final capsuleLeft = dragging
+                              ? (_dragX! - itemWidth / 2)
+                                  .clamp(0.0, barWidth - itemWidth)
+                              : widget.currentIndex * itemWidth;
 
-                      return GestureDetector(
-                        behavior: HitTestBehavior.opaque,
-                        onTapUp: (details) => widget.onTap?.call(
-                            _indexAt(details.localPosition.dx, barWidth)),
-                        onHorizontalDragStart: (details) =>
-                            setState(() => _dragX = details.localPosition.dx),
-                        onHorizontalDragUpdate: (details) => setState(() =>
-                            _dragX =
-                                details.localPosition.dx.clamp(0.0, barWidth)),
-                        onHorizontalDragEnd: (_) {
-                          final index = _indexAt(_dragX!, barWidth);
-                          setState(() => _dragX = null);
-                          widget.onTap?.call(index);
-                        },
-                        onHorizontalDragCancel: () =>
-                            setState(() => _dragX = null),
-                        child: Stack(
-                          children: [
-                            // Animated selection capsule background - uses a
-                            // spring-like overshoot curve so the capsule
-                            // settles with a tiny bounce instead of a flat
-                            // linear slide, matching the iOS 26 "liquid"
-                            // motion feel.
-                            AnimatedPositioned(
-                              duration: dragging
-                                  ? Duration.zero
-                                  : const Duration(milliseconds: 420),
-                              curve:
-                                  dragging ? Curves.linear : Curves.easeOutBack,
-                              left: capsuleLeft + _capsuleMargin,
-                              top: _capsuleMargin,
-                              bottom: _capsuleMargin,
-                              width: itemWidth - _capsuleMargin * 2,
-                              child: DecoratedBox(
-                                // Neutral glass pill, not a coloured tint -
-                                // in real iOS 26 Liquid Glass the selection
-                                // indicator itself stays white/grey; only the
-                                // icon and label pick up the accent colour.
-                                decoration: BoxDecoration(
-                                  color: isDark
-                                      ? Colors.white.withValues(alpha: 0.16)
-                                      : Colors.white.withValues(alpha: 0.65),
-                                  borderRadius: BorderRadius.circular(28),
-                                  border: Border.all(
-                                    color: Colors.white
-                                        .withValues(alpha: isDark ? 0.12 : 0.8),
-                                    width: 0.75,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            // Navigation items row
-                            Row(
+                          return GestureDetector(
+                            behavior: HitTestBehavior.opaque,
+                            onTapUp: (details) => widget.onTap?.call(
+                                _indexAt(details.localPosition.dx, barWidth)),
+                            onHorizontalDragStart: (details) => setState(
+                                () => _dragX = details.localPosition.dx),
+                            onHorizontalDragUpdate: (details) => setState(() =>
+                                _dragX = details.localPosition.dx
+                                    .clamp(0.0, barWidth)),
+                            onHorizontalDragEnd: (_) {
+                              final index = _indexAt(_dragX!, barWidth);
+                              setState(() => _dragX = null);
+                              widget.onTap?.call(index);
+                            },
+                            onHorizontalDragCancel: () =>
+                                setState(() => _dragX = null),
+                            child: Stack(
                               children: [
-                                for (var i = 0; i < widget.items.length; i++)
-                                  Expanded(
-                                    child: _GlassNavItem(
-                                      item: widget.items[i],
-                                      selected: i == activeIndex,
-                                      tint: tint,
-                                      showLabel: widget.items[i].showLabel ??
-                                          widget.showLabels,
+                                AnimatedPositioned(
+                                  duration: dragging
+                                      ? Duration.zero
+                                      : const Duration(milliseconds: 420),
+                                  curve: dragging
+                                      ? Curves.linear
+                                      : Curves.easeOutBack,
+                                  left: capsuleLeft + _capsuleMargin,
+                                  top: _capsuleMargin,
+                                  bottom: _capsuleMargin,
+                                  width: itemWidth - _capsuleMargin * 2,
+                                  child: DecoratedBox(
+                                    decoration: BoxDecoration(
+                                      color: isDark
+                                          ? Colors.white.withValues(alpha: 0.16)
+                                          : Colors.white
+                                              .withValues(alpha: 0.65),
+                                      borderRadius: BorderRadius.circular(28),
+                                      border: Border.all(
+                                        color: Colors.white.withValues(
+                                            alpha: isDark ? 0.12 : 0.8),
+                                        width: 0.75,
+                                      ),
                                     ),
                                   ),
+                                ),
+                                Row(
+                                  children: [
+                                    for (var i = 0;
+                                        i < widget.items.length;
+                                        i++)
+                                      Expanded(
+                                        child: _GlassNavItem(
+                                          item: widget.items[i],
+                                          selected: i == activeIndex,
+                                          tint: tint,
+                                          showLabel:
+                                              widget.items[i].showLabel ??
+                                                  widget.showLabels,
+                                        ),
+                                      ),
+                                  ],
+                                ),
                               ],
                             ),
-                          ],
-                        ),
-                      );
-                    },
+                          );
+                        },
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-          ),
+                )
+              : BackdropFilter(
+                  filter: ImageFilter.compose(
+                    outer: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                    inner: ColorFilter.matrix(_saturationMatrix(1.35)),
+                  ),
+                  child: Container(
+                    height: hasVisibleLabels ? 68 : 56,
+                    decoration: BoxDecoration(
+                      color: isDark
+                          ? Colors.black.withValues(alpha: 0.22)
+                          : Colors.white.withValues(alpha: 0.09),
+                      borderRadius: BorderRadius.circular(36),
+                      border: Border.all(
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.18)
+                            : Colors.white.withValues(alpha: 0.65),
+                        width: 0.75,
+                      ),
+                    ),
+                    child: Stack(
+                      children: [
+                        LayoutBuilder(
+                          builder: (context, constraints) {
+                            final barWidth = constraints.maxWidth;
+                            final itemWidth = barWidth / widget.items.length;
+                            final dragging = _dragX != null;
+                            final activeIndex = dragging
+                                ? _indexAt(_dragX!, barWidth)
+                                : widget.currentIndex;
+                            final capsuleLeft = dragging
+                                ? (_dragX! - itemWidth / 2)
+                                    .clamp(0.0, barWidth - itemWidth)
+                                : widget.currentIndex * itemWidth;
+
+                            return GestureDetector(
+                              behavior: HitTestBehavior.opaque,
+                              onTapUp: (details) => widget.onTap?.call(
+                                  _indexAt(details.localPosition.dx, barWidth)),
+                              onHorizontalDragStart: (details) => setState(
+                                  () => _dragX = details.localPosition.dx),
+                              onHorizontalDragUpdate: (details) => setState(
+                                  () => _dragX = details.localPosition.dx
+                                      .clamp(0.0, barWidth)),
+                              onHorizontalDragEnd: (_) {
+                                final index = _indexAt(_dragX!, barWidth);
+                                setState(() => _dragX = null);
+                                widget.onTap?.call(index);
+                              },
+                              onHorizontalDragCancel: () =>
+                                  setState(() => _dragX = null),
+                              child: Stack(
+                                children: [
+                                  AnimatedPositioned(
+                                    duration: dragging
+                                        ? Duration.zero
+                                        : const Duration(milliseconds: 420),
+                                    curve: dragging
+                                        ? Curves.linear
+                                        : Curves.easeOutBack,
+                                    left: capsuleLeft + _capsuleMargin,
+                                    top: _capsuleMargin,
+                                    bottom: _capsuleMargin,
+                                    width: itemWidth - _capsuleMargin * 2,
+                                    child: DecoratedBox(
+                                      decoration: BoxDecoration(
+                                        color: isDark
+                                            ? Colors.white
+                                                .withValues(alpha: 0.16)
+                                            : Colors.white
+                                                .withValues(alpha: 0.65),
+                                        borderRadius: BorderRadius.circular(28),
+                                        border: Border.all(
+                                          color: Colors.white.withValues(
+                                              alpha: isDark ? 0.12 : 0.8),
+                                          width: 0.75,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Row(
+                                    children: [
+                                      for (var i = 0;
+                                          i < widget.items.length;
+                                          i++)
+                                        Expanded(
+                                          child: _GlassNavItem(
+                                            item: widget.items[i],
+                                            selected: i == activeIndex,
+                                            tint: tint,
+                                            showLabel:
+                                                widget.items[i].showLabel ??
+                                                    widget.showLabels,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
         ),
       ),
     );

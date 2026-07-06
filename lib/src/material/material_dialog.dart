@@ -19,6 +19,8 @@ class MaterialConfirmDialog {
     TextStyle? titleStyle,
     TextStyle? messageStyle,
     TextStyle? secondaryMessageStyle,
+    TextAlign? titleAlign,
+    TextAlign? messageAlign,
     String confirmText = 'Confirm',
     String cancelText = 'Cancel',
     bool isDestructive = false,
@@ -42,14 +44,20 @@ class MaterialConfirmDialog {
                 borderRadius: BorderRadius.circular(28),
               ),
               title: titleWidget ??
-                  (title != null ? Text(title, style: titleStyle) : null),
+                  (title != null
+                      ? Text(title,
+                          textAlign: titleAlign ?? TextAlign.center,
+                          style: titleStyle)
+                      : null),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (messageWidget != null)
                     messageWidget
                   else if (message != null)
-                    Text(message, style: messageStyle)
+                    Text(message,
+                        textAlign: messageAlign ?? TextAlign.center,
+                        style: messageStyle)
                   else
                     const SizedBox.shrink(),
                   if (secondaryMessage != null ||
@@ -57,6 +65,7 @@ class MaterialConfirmDialog {
                     const SizedBox(height: 8),
                     secondaryMessageWidget ??
                         Text(secondaryMessage ?? '',
+                            textAlign: messageAlign ?? TextAlign.center,
                             style: secondaryMessageStyle),
                   ],
                 ],

@@ -15,6 +15,7 @@ class AdaptiveNavigationBar extends StatelessWidget {
     this.onTap,
     this.showLabels = true,
     required this.items,
+    this.backgroundColor,
     this.uiKit,
   });
 
@@ -32,6 +33,9 @@ class AdaptiveNavigationBar extends StatelessWidget {
 
   /// The items displayed in the navigation bar.
   final List<AdaptiveNavItem> items;
+
+  /// Optional solid background color for the glass navigation bar.
+  final Color? backgroundColor;
 
   /// Optional override for the resolved UI kit.
   final AdaptiveUiKit? uiKit;

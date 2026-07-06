@@ -105,6 +105,8 @@ class LiquidGlassDialog {
     TextStyle? titleStyle,
     TextStyle? messageStyle,
     TextStyle? secondaryMessageStyle,
+    TextAlign? titleAlign,
+    TextAlign? messageAlign,
     String confirmText = 'Confirm',
     String cancelText = 'Cancel',
     bool isDestructive = false,
@@ -130,7 +132,7 @@ class LiquidGlassDialog {
                         (title != null
                             ? Text(
                                 title,
-                                textAlign: TextAlign.center,
+                                textAlign: titleAlign ?? TextAlign.center,
                                 style: titleStyle ??
                                     TextStyle(
                                       fontSize: 17,
@@ -144,7 +146,7 @@ class LiquidGlassDialog {
                         (message != null
                             ? Text(
                                 message,
-                                textAlign: TextAlign.center,
+                                textAlign: messageAlign ?? TextAlign.center,
                                 style: messageStyle ??
                                     TextStyle(
                                       fontSize: 14,
