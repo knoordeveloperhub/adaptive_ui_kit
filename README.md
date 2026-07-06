@@ -43,6 +43,7 @@ No platform checks. No duplicate widgets.
 - Adaptive Date Picker
 - Adaptive Time Picker
 - Adaptive Multi Select
+- Adaptive Navigation Bar
 - Global theme configuration
 - Force UI Kit support
 - Custom resolver support
@@ -54,7 +55,7 @@ No platform checks. No duplicate widgets.
 
 ```yaml
 dependencies:
-  adaptive_ui_kit: ^0.0.6
+  adaptive_ui_kit: ^0.0.7
 ```
 
 ```bash
@@ -164,6 +165,22 @@ final selected = await AdaptiveMultiSelect.show(
   titleWidget: Text('Choose'),
   options: [MultiSelectOption(id: '1', label: 'One', child: Text('One'))],
 );
+
+// Adaptive bottom navigation bar example
+Widget build(BuildContext context) {
+  return Scaffold(
+    bottomNavigationBar: AdaptiveNavigationBar(
+      currentIndex: currentIndex,
+      onTap: (index) => setState(() => currentIndex = index),
+      items: const [
+        AdaptiveNavItem(icon: Icons.home_outlined, activeIcon: Icons.home, label: 'Home'),
+        AdaptiveNavItem(icon: Icons.search_outlined, activeIcon: Icons.search, label: 'Search'),
+        AdaptiveNavItem(icon: Icons.person_outline, activeIcon: Icons.person, label: 'Profile'),
+      ],
+    ),
+    body: _pages[currentIndex],
+  );
+}
 ```
 
 Notes:
@@ -181,6 +198,7 @@ Notes:
 | AdaptiveDateTimePicker | Adaptive date picker |
 | AdaptiveTimePicker | Adaptive time picker |
 | AdaptiveMultiSelect | Adaptive multi select |
+| AdaptiveNavigationBar | Platform adaptive bottom navigation bar |
 
 ---
 

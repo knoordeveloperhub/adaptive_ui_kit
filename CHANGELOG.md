@@ -1,3 +1,6 @@
+## 0.0.7
+- Readme updated about navigation bar
+
 ## 0.0.6
 - Added Bottom Navigation Bar.
 - Added custom attributes to all widgets for enhanced customization and control.
