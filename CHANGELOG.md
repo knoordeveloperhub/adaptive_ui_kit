@@ -1,3 +1,6 @@
+## 0.0.8
+- Readme updated
+
 ## 0.0.7
 - Readme updated about navigation bar
 
