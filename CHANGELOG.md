@@ -1,3 +1,6 @@
+## 0.0.9
+- Action sheet and multi selection title over flow issue fixed
+
 ## 0.0.8
 - Readme updated
 

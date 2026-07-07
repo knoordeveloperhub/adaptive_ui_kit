@@ -1,6 +1,6 @@
 name: adaptive_ui_kit
 description: "Platform-adaptive Flutter UI kit with automatic Glass (iOS/macOS) and Material (Android) design — adaptive dialogs, pickers, and more."
-version: 0.0.8
+version: 0.0.9
 homepage: https://github.com/knoordeveloperhub/adaptive_ui_kit
 repository: https://github.com/knoordeveloperhub/adaptive_ui_kit
 issue_tracker: https://github.com/knoordeveloperhub/adaptive_ui_kit/issues
