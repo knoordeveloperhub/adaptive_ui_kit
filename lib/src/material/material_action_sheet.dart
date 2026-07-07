@@ -103,17 +103,29 @@ class MaterialActionSheet {
                                           vertical: 14,
                                         ),
                                         child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
                                           children: [
-                                            Icon(
-                                              item.icon,
-                                              color: item.isDestructive
-                                                  ? scheme.error
-                                                  : scheme.onSurface,
-                                            ),
-                                            const SizedBox(width: 12),
-                                            item.child ??
-                                                Text(
+                                            if (item.child != null) ...[
+                                              item.child!,
+                                            ] else ...[
+                                              Align(
+                                                alignment: Alignment.center,
+                                                child: Icon(
+                                                  item.icon,
+                                                  color: item.isDestructive
+                                                      ? scheme.error
+                                                      : scheme.onSurface,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 12),
+                                              Expanded(
+                                                child: Text(
                                                   item.label,
+                                                  softWrap: true,
+                                                  maxLines: 3,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                   style: item.labelStyle ??
                                                       TextStyle(
                                                         color: item
@@ -122,6 +134,8 @@ class MaterialActionSheet {
                                                             : scheme.onSurface,
                                                       ),
                                                 ),
+                                              ),
+                                            ],
                                           ],
                                         ),
                                       ),

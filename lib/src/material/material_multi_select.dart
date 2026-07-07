@@ -96,6 +96,9 @@ class MaterialMultiSelectSheet {
                                   title: option.child ??
                                       Text(
                                         option.label,
+                                        softWrap: true,
+                                        maxLines: 3,
+                                        overflow: TextOverflow.ellipsis,
                                         style: option.labelStyle,
                                       ),
                                   controlAffinity:

@@ -424,7 +424,11 @@ class _ExampleScreenState extends State<ExampleScreen> {
             ],
           ),
         ),
-        const MultiSelectOption(id: '3', label: 'Option 3'),
+        const MultiSelectOption(
+          id: '3',
+          label:
+              'Scroll down to see content continue behind the floating bar. Scroll down to see content continue behind the floating bar.',
+        ),
         const MultiSelectOption(id: '4', label: 'Option 4'),
       ],
     );

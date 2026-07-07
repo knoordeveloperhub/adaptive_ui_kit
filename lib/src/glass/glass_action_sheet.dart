@@ -95,31 +95,44 @@ class LiquidGlassActionSheet {
                                           ),
                                         ),
                                         child: Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
                                           children: [
                                             if (item.child != null) ...[
                                               item.child!,
                                             ] else ...[
-                                              Icon(
-                                                item.icon,
-                                                size: 19,
-                                                color: item.isDestructive
-                                                    ? AdaptiveUiKitConfig
-                                                        .glass.destructiveColor
-                                                    : GlassColors.text(ctx),
+                                              Align(
+                                                alignment: Alignment.center,
+                                                child: Icon(
+                                                  item.icon,
+                                                  size: 19,
+                                                  color: item.isDestructive
+                                                      ? AdaptiveUiKitConfig
+                                                          .glass
+                                                          .destructiveColor
+                                                      : GlassColors.text(ctx),
+                                                ),
                                               ),
                                               const SizedBox(width: 10),
-                                              Text(
-                                                item.label,
-                                                style: item.labelStyle ??
-                                                    TextStyle(
-                                                      fontSize: 15,
-                                                      color: item.isDestructive
-                                                          ? AdaptiveUiKitConfig
-                                                              .glass
-                                                              .destructiveColor
-                                                          : GlassColors.text(
-                                                              ctx),
-                                                    ),
+                                              Expanded(
+                                                child: Text(
+                                                  item.label,
+                                                  softWrap: true,
+                                                  maxLines: 3,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: item.labelStyle ??
+                                                      TextStyle(
+                                                        fontSize: 15,
+                                                        color: item
+                                                                .isDestructive
+                                                            ? AdaptiveUiKitConfig
+                                                                .glass
+                                                                .destructiveColor
+                                                            : GlassColors.text(
+                                                                ctx),
+                                                      ),
+                                                ),
                                               ),
                                             ],
                                           ],

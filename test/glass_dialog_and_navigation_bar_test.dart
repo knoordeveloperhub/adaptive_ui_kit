@@ -68,4 +68,85 @@ void main() {
     expect(backgroundContainer.decoration, isA<BoxDecoration>());
     expect((backgroundContainer.decoration as BoxDecoration).color, Colors.red);
   });
+
+  testWidgets(
+      'Glass action sheet wraps long labels to three lines with ellipsis', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Builder(
+            builder: (context) {
+              return ElevatedButton(
+                onPressed: () {
+                  LiquidGlassActionSheet.show(
+                    context: context,
+                    items: [
+                      ActionSheetItem(
+                        label:
+                            'This is a very long action sheet label that should wrap',
+                        icon: Icons.share,
+                        onTap: () {},
+                      ),
+                    ],
+                  );
+                },
+                child: const Text('Show action sheet'),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Show action sheet'));
+    await tester.pumpAndSettle();
+
+    final label =
+        tester.widget<Text>(find.textContaining('This is a very long'));
+    expect(label.softWrap, isTrue);
+    expect(label.maxLines, 3);
+    expect(label.overflow, TextOverflow.ellipsis);
+  });
+
+  testWidgets('Glass multi-select wraps long option labels', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Builder(
+            builder: (context) {
+              return ElevatedButton(
+                onPressed: () {
+                  LiquidGlassMultiSelect.show(
+                    context: context,
+                    title: 'Options',
+                    options: [
+                      MultiSelectOption(
+                        id: 'long',
+                        label:
+                            'This is a very long multi-select option label that should wrap',
+                      ),
+                    ],
+                  );
+                },
+                child: const Text('Show multi-select'),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Show multi-select'));
+    await tester.pumpAndSettle();
+
+    final label =
+        tester.widget<Text>(find.textContaining('This is a very long'));
+    expect(label.softWrap, isTrue);
+    expect(label.maxLines, 3);
+    expect(label.overflow, TextOverflow.ellipsis);
+  });
 }

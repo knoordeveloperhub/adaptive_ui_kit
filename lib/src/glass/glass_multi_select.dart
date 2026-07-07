@@ -194,25 +194,35 @@ class _LiquidGlassMultiSelectSheetState
                                       borderRadius: BorderRadius.circular(999),
                                     ),
                                     child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
                                       children: [
-                                        option.child ??
-                                            Text(
-                                              option.label,
-                                              style: option.labelStyle ??
-                                                  TextStyle(
-                                                    fontSize: 15,
-                                                    color: GlassColors.text(
-                                                        context),
-                                                  ),
-                                            ),
+                                        Expanded(
+                                          child: option.child ??
+                                              Text(
+                                                option.label,
+                                                softWrap: true,
+                                                maxLines: 3,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: option.labelStyle ??
+                                                    TextStyle(
+                                                      fontSize: 15,
+                                                      color: GlassColors.text(
+                                                          context),
+                                                    ),
+                                              ),
+                                        ),
                                         if (isSelected)
-                                          Icon(
-                                            CupertinoIcons.check_mark,
-                                            size: 18,
-                                            color: AdaptiveUiKitConfig
-                                                .glass.tintColor,
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                              left: 8,
+                                            ),
+                                            child: Icon(
+                                              CupertinoIcons.check_mark,
+                                              size: 18,
+                                              color: AdaptiveUiKitConfig
+                                                  .glass.tintColor,
+                                            ),
                                           ),
                                       ],
                                     ),
