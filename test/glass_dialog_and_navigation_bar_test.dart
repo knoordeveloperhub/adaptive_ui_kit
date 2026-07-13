@@ -39,6 +39,36 @@ void main() {
     expect(messageText.textAlign, TextAlign.right);
   });
 
+  testWidgets('GlassNavigationBar uses larger icons and smaller labels', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: GlassNavigationBar(
+            currentIndex: 0,
+            items: const [
+              AdaptiveNavItem(icon: Icons.home, label: 'Home'),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    final icon = tester.widget<Icon>(find.byType(Icon).first);
+    final labelStyle = tester
+        .widgetList<AnimatedDefaultTextStyle>(
+          find.byType(AnimatedDefaultTextStyle),
+        )
+        .firstWhere(
+          (style) =>
+              style.child is Text && (style.child as Text).data == 'Home',
+        );
+
+    expect(icon.size, 28);
+    expect(labelStyle.style.fontSize, 10);
+  });
+
   testWidgets('GlassNavigationBar uses a solid background color when provided',
       (
     WidgetTester tester,

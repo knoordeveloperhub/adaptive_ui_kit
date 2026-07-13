@@ -93,7 +93,8 @@ class _MaterialNavItem extends StatelessWidget {
   final ColorScheme colorScheme;
   final VoidCallback onTap;
 
-  static const double _iconSize = 24;
+  static const double _iconSize = 28;
+  static const double _noLabelIconSize = 35;
   static const Duration _duration = Duration(milliseconds: 300);
   static const Curve _curve = Curves.easeOutCubic;
 
@@ -113,13 +114,15 @@ class _MaterialNavItem extends StatelessWidget {
         ? colorScheme.onSecondaryContainer
         : colorScheme.onSurfaceVariant;
 
+    final iconSize = showLabel ? _iconSize : _noLabelIconSize;
+
     final Widget iconWidget = builder != null
         ? SizedBox(
-            width: _iconSize,
-            height: _iconSize,
-            child: builder(context, iconColor, _iconSize),
+            width: iconSize,
+            height: iconSize,
+            child: builder(context, iconColor, iconSize),
           )
-        : Icon(icon, size: _iconSize, color: iconColor);
+        : Icon(icon, size: iconSize, color: iconColor);
 
     return Semantics(
       selected: selected,
@@ -150,8 +153,8 @@ class _MaterialNavItem extends StatelessWidget {
                         child: Transform.scale(
                           scaleX: 0.6 + (0.4 * t),
                           child: Container(
-                            width: 64,
-                            height: 32,
+                            width: showLabel ? 64 : 72,
+                            height: showLabel ? 32 : 36,
                             decoration: BoxDecoration(
                               color: colorScheme.secondaryContainer,
                               borderRadius: BorderRadius.circular(16),

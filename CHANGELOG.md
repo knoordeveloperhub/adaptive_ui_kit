@@ -1,3 +1,7 @@
+## 0.1.0
+- Glass nav bar updated ad Ios 26.
+- Material nav bar Icons size also adjust 
+
 ## 0.0.9
 - Action sheet and multi selection title over flow issue fixed
 

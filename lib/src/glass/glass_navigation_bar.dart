@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
@@ -40,9 +41,10 @@ class GlassNavigationBar extends StatefulWidget {
 }
 
 class _GlassNavigationBarState extends State<GlassNavigationBar> {
-  static const double _capsuleMargin = 4;
   static const double _barHorizontalPadding = 12;
-  static const double _barBottomMargin = 12;
+  static final double _barBottomMargin = Platform.isIOS ? 20 : 15;
+  static const double _barHeightWithLabels = 62;
+  static const double _barHeightWithoutLabels = 62;
 
   /// Finger x-position within the bar while dragging, null otherwise.
   double? _dragX;
@@ -50,6 +52,44 @@ class _GlassNavigationBarState extends State<GlassNavigationBar> {
   int _indexAt(double x, double barWidth) {
     final itemWidth = barWidth / widget.items.length;
     return (x ~/ itemWidth).clamp(0, widget.items.length - 1);
+  }
+
+  Widget _buildNavRow(double barWidth, Color tint) {
+    final activeIndex =
+        _dragX != null ? _indexAt(_dragX!, barWidth) : widget.currentIndex;
+
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTapUp: (details) => widget.onTap?.call(
+        _indexAt(details.localPosition.dx, barWidth),
+      ),
+      onHorizontalDragStart: (details) => setState(
+        () => _dragX = details.localPosition.dx,
+      ),
+      onHorizontalDragUpdate: (details) => setState(
+        () => _dragX = details.localPosition.dx.clamp(0.0, barWidth),
+      ),
+      onHorizontalDragEnd: (_) {
+        final index = _indexAt(_dragX!, barWidth);
+        setState(() => _dragX = null);
+        widget.onTap?.call(index);
+      },
+      onHorizontalDragCancel: () => setState(() => _dragX = null),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          for (var i = 0; i < widget.items.length; i++)
+            Expanded(
+              child: _GlassNavItem(
+                item: widget.items[i],
+                selected: i == activeIndex,
+                tint: tint,
+                showLabel: widget.items[i].showLabel ?? widget.showLabels,
+              ),
+            ),
+        ],
+      ),
+    );
   }
 
   /// Builds a standard saturation matrix so the blurred backdrop stays
@@ -90,231 +130,86 @@ class _GlassNavigationBarState extends State<GlassNavigationBar> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        _barHorizontalPadding,
-        0,
-        _barHorizontalPadding,
-        _barBottomMargin,
-      ),
-      // Ambient shadow lives on this outer, unclipped container - putting it
-      // inside the ClipRRect below (as before) meant the shadow was clipped
-      // away entirely except for a thin uneven sliver near the curved
-      // corners, which showed up as a stray glow/bulge artifact.
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(36),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.12),
-              blurRadius: 20,
-              offset: const Offset(0, 6),
-            ),
-          ],
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(36),
-          child: widget.backgroundColor != null
-              ? Container(
-                  height: hasVisibleLabels ? 68 : 56,
-                  decoration: BoxDecoration(
-                    color: widget.backgroundColor,
-                    borderRadius: BorderRadius.circular(36),
-                    border: Border.all(
-                      color: isDark
-                          ? Colors.white.withValues(alpha: 0.18)
-                          : Colors.white.withValues(alpha: 0.65),
-                      width: 0.75,
-                    ),
+      padding: EdgeInsets.only(bottom: _barBottomMargin),
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 720),
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: _barHorizontalPadding),
+            // Ambient shadow lives on this outer, unclipped container - putting it
+            // inside the ClipRRect below (as before) meant the shadow was clipped
+            // away entirely except for a thin uneven sliver near the curved
+            // corners, which showed up as a stray glow/bulge artifact.
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(36),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.12),
+                    blurRadius: 50,
+                    offset: const Offset(0, 6),
                   ),
-                  child: Stack(
-                    children: [
-                      LayoutBuilder(
-                        builder: (context, constraints) {
-                          final barWidth = constraints.maxWidth;
-                          final itemWidth = barWidth / widget.items.length;
-                          final dragging = _dragX != null;
-                          final activeIndex = dragging
-                              ? _indexAt(_dragX!, barWidth)
-                              : widget.currentIndex;
-                          final capsuleLeft = dragging
-                              ? (_dragX! - itemWidth / 2)
-                                  .clamp(0.0, barWidth - itemWidth)
-                              : widget.currentIndex * itemWidth;
-
-                          return GestureDetector(
-                            behavior: HitTestBehavior.opaque,
-                            onTapUp: (details) => widget.onTap?.call(
-                                _indexAt(details.localPosition.dx, barWidth)),
-                            onHorizontalDragStart: (details) => setState(
-                                () => _dragX = details.localPosition.dx),
-                            onHorizontalDragUpdate: (details) => setState(() =>
-                                _dragX = details.localPosition.dx
-                                    .clamp(0.0, barWidth)),
-                            onHorizontalDragEnd: (_) {
-                              final index = _indexAt(_dragX!, barWidth);
-                              setState(() => _dragX = null);
-                              widget.onTap?.call(index);
-                            },
-                            onHorizontalDragCancel: () =>
-                                setState(() => _dragX = null),
-                            child: Stack(
-                              children: [
-                                AnimatedPositioned(
-                                  duration: dragging
-                                      ? Duration.zero
-                                      : const Duration(milliseconds: 420),
-                                  curve: dragging
-                                      ? Curves.linear
-                                      : Curves.easeOutBack,
-                                  left: capsuleLeft + _capsuleMargin,
-                                  top: _capsuleMargin,
-                                  bottom: _capsuleMargin,
-                                  width: itemWidth - _capsuleMargin * 2,
-                                  child: DecoratedBox(
-                                    decoration: BoxDecoration(
-                                      color: isDark
-                                          ? Colors.white.withValues(alpha: 0.16)
-                                          : Colors.white
-                                              .withValues(alpha: 0.65),
-                                      borderRadius: BorderRadius.circular(28),
-                                      border: Border.all(
-                                        color: Colors.white.withValues(
-                                            alpha: isDark ? 0.12 : 0.8),
-                                        width: 0.75,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Row(
-                                  children: [
-                                    for (var i = 0;
-                                        i < widget.items.length;
-                                        i++)
-                                      Expanded(
-                                        child: _GlassNavItem(
-                                          item: widget.items[i],
-                                          selected: i == activeIndex,
-                                          tint: tint,
-                                          showLabel:
-                                              widget.items[i].showLabel ??
-                                                  widget.showLabels,
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                )
-              : BackdropFilter(
-                  filter: ImageFilter.compose(
-                    outer: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
-                    inner: ColorFilter.matrix(_saturationMatrix(1.35)),
-                  ),
-                  child: Container(
-                    height: hasVisibleLabels ? 68 : 56,
-                    decoration: BoxDecoration(
-                      color: isDark
-                          ? Colors.black.withValues(alpha: 0.22)
-                          : Colors.white.withValues(alpha: 0.09),
-                      borderRadius: BorderRadius.circular(36),
-                      border: Border.all(
-                        color: isDark
-                            ? Colors.white.withValues(alpha: 0.18)
-                            : Colors.white.withValues(alpha: 0.65),
-                        width: 0.75,
-                      ),
-                    ),
-                    child: Stack(
-                      children: [
-                        LayoutBuilder(
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(36),
+                child: widget.backgroundColor != null
+                    ? Container(
+                        height: hasVisibleLabels
+                            ? _barHeightWithLabels
+                            : _barHeightWithoutLabels,
+                        decoration: BoxDecoration(
+                          color: widget.backgroundColor,
+                          borderRadius: BorderRadius.circular(36),
+                          border: Border.all(
+                            color: isDark
+                                ? Colors.white.withValues(alpha: 0.18)
+                                : Colors.white.withValues(alpha: 0.65),
+                            width: 0.75,
+                          ),
+                        ),
+                        child: LayoutBuilder(
                           builder: (context, constraints) {
                             final barWidth = constraints.maxWidth;
-                            final itemWidth = barWidth / widget.items.length;
-                            final dragging = _dragX != null;
-                            final activeIndex = dragging
-                                ? _indexAt(_dragX!, barWidth)
-                                : widget.currentIndex;
-                            final capsuleLeft = dragging
-                                ? (_dragX! - itemWidth / 2)
-                                    .clamp(0.0, barWidth - itemWidth)
-                                : widget.currentIndex * itemWidth;
 
-                            return GestureDetector(
-                              behavior: HitTestBehavior.opaque,
-                              onTapUp: (details) => widget.onTap?.call(
-                                  _indexAt(details.localPosition.dx, barWidth)),
-                              onHorizontalDragStart: (details) => setState(
-                                  () => _dragX = details.localPosition.dx),
-                              onHorizontalDragUpdate: (details) => setState(
-                                  () => _dragX = details.localPosition.dx
-                                      .clamp(0.0, barWidth)),
-                              onHorizontalDragEnd: (_) {
-                                final index = _indexAt(_dragX!, barWidth);
-                                setState(() => _dragX = null);
-                                widget.onTap?.call(index);
-                              },
-                              onHorizontalDragCancel: () =>
-                                  setState(() => _dragX = null),
-                              child: Stack(
-                                children: [
-                                  AnimatedPositioned(
-                                    duration: dragging
-                                        ? Duration.zero
-                                        : const Duration(milliseconds: 420),
-                                    curve: dragging
-                                        ? Curves.linear
-                                        : Curves.easeOutBack,
-                                    left: capsuleLeft + _capsuleMargin,
-                                    top: _capsuleMargin,
-                                    bottom: _capsuleMargin,
-                                    width: itemWidth - _capsuleMargin * 2,
-                                    child: DecoratedBox(
-                                      decoration: BoxDecoration(
-                                        color: isDark
-                                            ? Colors.white
-                                                .withValues(alpha: 0.16)
-                                            : Colors.white
-                                                .withValues(alpha: 0.65),
-                                        borderRadius: BorderRadius.circular(28),
-                                        border: Border.all(
-                                          color: Colors.white.withValues(
-                                              alpha: isDark ? 0.12 : 0.8),
-                                          width: 0.75,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Row(
-                                    children: [
-                                      for (var i = 0;
-                                          i < widget.items.length;
-                                          i++)
-                                        Expanded(
-                                          child: _GlassNavItem(
-                                            item: widget.items[i],
-                                            selected: i == activeIndex,
-                                            tint: tint,
-                                            showLabel:
-                                                widget.items[i].showLabel ??
-                                                    widget.showLabels,
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            );
+                            return _buildNavRow(barWidth, tint);
                           },
                         ),
-                      ],
-                    ),
-                  ),
-                ),
+                      )
+                    : BackdropFilter(
+                        filter: ImageFilter.compose(
+                          outer: ImageFilter.blur(sigmaX: 1.5, sigmaY: 2),
+                          inner: ColorFilter.matrix(_saturationMatrix(1.35)),
+                        ),
+                        child: Container(
+                          height: hasVisibleLabels
+                              ? _barHeightWithLabels
+                              : _barHeightWithoutLabels,
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? Colors.black.withValues(alpha: 0.35)
+                                : Colors.white.withValues(alpha: 0.78),
+                            borderRadius: BorderRadius.circular(36),
+                            border: Border.all(
+                              color: isDark
+                                  ? Colors.white.withValues(alpha: 0.18)
+                                  : Colors.white.withValues(alpha: 0.65),
+                              width: 0.75,
+                            ),
+                          ),
+                          child: LayoutBuilder(
+                            builder: (context, constraints) {
+                              final barWidth = constraints.maxWidth;
+
+                              return _buildNavRow(barWidth, tint);
+                            },
+                          ),
+                        ),
+                      ),
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -337,8 +232,10 @@ class _GlassNavItem extends StatelessWidget {
   // Apple HIG-ish sizing: unselected icons sit at a slightly smaller base
   // size, and the selected icon scales up with a spring bounce rather than
   // both rendering at a single fixed 24px with no distinction.
-  static const double _baseIconSize = 22;
-  static const double _selectedScale = 1.18;
+  static const double _baseIconSize = 28;
+  static const double _noLabelIconSize = 33;
+  static const double _selectedScale = 1.14;
+  static const double _labelFontSize = 10;
 
   @override
   Widget build(BuildContext context) {
@@ -361,52 +258,76 @@ class _GlassNavItem extends StatelessWidget {
     final builder = selected
         ? (item.activeIconBuilder ?? item.iconBuilder)
         : item.iconBuilder;
+    final hasLabel = showLabel && item.label != null;
+    final iconSize = hasLabel ? _baseIconSize : _noLabelIconSize;
 
     // Prefer the custom builder (SVG/Image/any widget) when provided;
     // otherwise fall back to the plain IconData rendering.
     final Widget iconWidget = builder != null
         ? SizedBox(
-            width: _baseIconSize,
-            height: _baseIconSize,
-            child: builder(context, iconColor, _baseIconSize),
+            width: iconSize,
+            height: iconSize,
+            child: Center(
+              child: builder(context, iconColor, iconSize),
+            ),
           )
-        : Icon(icon, color: iconColor, size: _baseIconSize);
+        : Icon(icon, color: iconColor, size: iconSize);
 
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TweenAnimationBuilder<double>(
-            tween: Tween<double>(
-              begin: 1.0,
-              end: selected ? _selectedScale : 1.0,
-            ),
-            duration: const Duration(milliseconds: 320),
-            curve: Curves.easeOutBack,
-            builder: (context, scale, child) {
-              return Transform.scale(scale: scale, child: child);
-            },
-            child: iconWidget,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 560),
+        curve: Curves.easeOutCubic,
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        padding: selected
+            ? const EdgeInsets.symmetric(horizontal: 20, vertical: 3)
+            : const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+        decoration: selected
+            ? BoxDecoration(
+                color: isDark
+                    ? Colors.white.withValues(alpha: 0.14)
+                    : Colors.black.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(999),
+                border: Border.all(
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.12)
+                      : Colors.black.withValues(alpha: 0.05),
+                  width: 0.75,
+                ),
+              )
+            : null,
+        child: AnimatedScale(
+          duration: const Duration(milliseconds: 560),
+          curve: Curves.easeOutBack,
+          scale: selected ? _selectedScale : 1.0,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                width: iconSize,
+                height: iconSize,
+                child: Center(child: iconWidget),
+              ),
+              if (hasLabel) ...[
+                const SizedBox(height: 2),
+                AnimatedDefaultTextStyle(
+                  duration: const Duration(milliseconds: 500),
+                  style: TextStyle(
+                    color: textColor,
+                    fontSize: _labelFontSize,
+                    fontWeight: FontWeight.w700,
+                    decoration: TextDecoration.none,
+                  ),
+                  child: Text(
+                    item.label!,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ],
           ),
-          if (showLabel && item.label != null) ...[
-            const SizedBox(height: 4),
-            AnimatedDefaultTextStyle(
-              duration: const Duration(milliseconds: 200),
-              style: TextStyle(
-                color: textColor,
-                fontSize: 11,
-                fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
-                decoration: TextDecoration.none,
-              ),
-              child: Text(
-                item.label!,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ],
+        ),
       ),
     );
   }

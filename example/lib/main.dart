@@ -20,8 +20,22 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Adaptive UI Kit Example',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        // colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            foregroundColor: Colors.white,
+            backgroundColor: Colors.blue,
+          ),
+        ),
+        scaffoldBackgroundColor: Colors.white,
+        cardTheme: CardThemeData(
+          color: Colors.white,
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(12)),
+          ),
+        ),
       ),
       debugShowCheckedModeBanner: false,
       darkTheme: ThemeData(
