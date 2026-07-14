@@ -1,3 +1,6 @@
+## 0.1.1
+- UI issues fixed
+
 ## 0.1.0
 - Glass nav bar updated ad Ios 26.
 - Material nav bar Icons size also adjust 

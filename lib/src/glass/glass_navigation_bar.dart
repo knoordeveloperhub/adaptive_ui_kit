@@ -279,8 +279,8 @@ class _GlassNavItem extends StatelessWidget {
         curve: Curves.easeOutCubic,
         margin: const EdgeInsets.symmetric(vertical: 4),
         padding: selected
-            ? const EdgeInsets.symmetric(horizontal: 20, vertical: 3)
-            : const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+            ? const EdgeInsets.symmetric(horizontal: 15, vertical: 5)
+            : const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: selected
             ? BoxDecoration(
                 color: isDark
@@ -309,7 +309,6 @@ class _GlassNavItem extends StatelessWidget {
                 child: Center(child: iconWidget),
               ),
               if (hasLabel) ...[
-                const SizedBox(height: 2),
                 AnimatedDefaultTextStyle(
                   duration: const Duration(milliseconds: 500),
                   style: TextStyle(

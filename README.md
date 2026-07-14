@@ -58,7 +58,7 @@ To integrate Adaptive UI Kit into your Flutter project:
 
 ```yaml
 dependencies:
-  adaptive_ui_kit: ^0.1.0
+  adaptive_ui_kit: ^0.1.1
 ```
 
 2. Import the package:
@@ -165,10 +165,15 @@ Glass UI   Material UI
   <img src="https://raw.githubusercontent.com/knoordeveloperhub/adaptive_ui_kit/main/assets/screenshots/overview.png" width="220">
 </p>
 
-### Adaptive Dialog
+### Adaptive UI
 
 | iOS (Glass) | Android (Material) |
 |-------------|--------------------| 
+
+
+### Bottom Navigation Bar
+ 
+| <img src="https://raw.githubusercontent.com/knoordeveloperhub/adaptive_ui_kit/main/assets/screenshots/bottom_nav_bar_glass.png" width="220"> | <img src="https://raw.githubusercontent.com/knoordeveloperhub/adaptive_ui_kit/main/assets/screenshots/bottom_nav_bar_material.png" width="220"> |
 
 
 ### Date Picker
