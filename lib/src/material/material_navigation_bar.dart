@@ -153,8 +153,8 @@ class _MaterialNavItem extends StatelessWidget {
                         child: Transform.scale(
                           scaleX: 0.6 + (0.4 * t),
                           child: Container(
-                            width: showLabel ? 64 : 72,
-                            height: showLabel ? 32 : 36,
+                            width: showLabel ? 64 : 60,
+                            height: showLabel ? 32 : 42,
                             decoration: BoxDecoration(
                               color: colorScheme.secondaryContainer,
                               borderRadius: BorderRadius.circular(16),

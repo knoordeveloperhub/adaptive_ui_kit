@@ -1,3 +1,6 @@
+## 0.1.2
+- Material Nav Bar UI issues fixed
+
 ## 0.1.1
 - UI issues fixed
 
