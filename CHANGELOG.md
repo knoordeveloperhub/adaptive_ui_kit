@@ -1,3 +1,6 @@
+## 0.1.3
+- Action Sheet card text made responsive
+
 ## 0.1.2
 - Material Nav Bar UI issues fixed
 

@@ -367,7 +367,8 @@ class _ExampleScreenState extends State<ExampleScreen> {
       title: 'Choose an action',
       items: [
         ActionSheetItem(
-          label: 'Edit',
+          label:
+              'Inhalation – breathed into the lungs using inhalers or nebulisers',
           icon: CupertinoIcons.photo,
           onTap: () => _showSnackBar('Edit tapped'),
         ),

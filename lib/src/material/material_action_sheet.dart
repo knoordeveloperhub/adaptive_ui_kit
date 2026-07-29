@@ -123,9 +123,6 @@ class MaterialActionSheet {
                                                 child: Text(
                                                   item.label,
                                                   softWrap: true,
-                                                  maxLines: 3,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
                                                   style: item.labelStyle ??
                                                       TextStyle(
                                                         color: item

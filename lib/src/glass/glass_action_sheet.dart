@@ -118,9 +118,6 @@ class LiquidGlassActionSheet {
                                                 child: Text(
                                                   item.label,
                                                   softWrap: true,
-                                                  maxLines: 3,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
                                                   style: item.labelStyle ??
                                                       TextStyle(
                                                         fontSize: 15,

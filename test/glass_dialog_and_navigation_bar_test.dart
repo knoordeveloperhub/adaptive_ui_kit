@@ -99,8 +99,47 @@ void main() {
     expect((backgroundContainer.decoration as BoxDecoration).color, Colors.red);
   });
 
-  testWidgets(
-      'Glass action sheet wraps long labels to three lines with ellipsis', (
+  testWidgets('Material action sheet wraps long labels instead of clipping', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Builder(
+            builder: (context) {
+              return ElevatedButton(
+                onPressed: () {
+                  MaterialActionSheet.show(
+                    context: context,
+                    items: [
+                      ActionSheetItem(
+                        label:
+                            'This is a very long action sheet label that should wrap',
+                        icon: Icons.share,
+                        onTap: () {},
+                      ),
+                    ],
+                  );
+                },
+                child: const Text('Show material action sheet'),
+              );
+            },
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Show material action sheet'));
+    await tester.pumpAndSettle();
+
+    final label =
+        tester.widget<Text>(find.textContaining('This is a very long'));
+    expect(label.softWrap, isTrue);
+    expect(label.maxLines, isNull);
+    expect(label.overflow, isNull);
+  });
+
+  testWidgets('Glass action sheet wraps long labels instead of clipping', (
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(
@@ -136,8 +175,8 @@ void main() {
     final label =
         tester.widget<Text>(find.textContaining('This is a very long'));
     expect(label.softWrap, isTrue);
-    expect(label.maxLines, 3);
-    expect(label.overflow, TextOverflow.ellipsis);
+    expect(label.maxLines, isNull);
+    expect(label.overflow, isNull);
   });
 
   testWidgets('Glass multi-select wraps long option labels', (

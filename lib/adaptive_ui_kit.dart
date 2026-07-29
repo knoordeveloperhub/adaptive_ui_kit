@@ -3,6 +3,7 @@ export 'src/adaptive/adaptive_action_sheet.dart';
 export 'src/glass/glass_dialog.dart';
 export 'src/glass/glass_navigation_bar.dart';
 export 'src/glass/glass_action_sheet.dart';
+export 'src/material/material_action_sheet.dart';
 export 'src/glass/glass_multi_select.dart';
 export 'src/adaptive/adaptive_date_picker.dart';
 export 'src/adaptive/adaptive_time_picker.dart';
