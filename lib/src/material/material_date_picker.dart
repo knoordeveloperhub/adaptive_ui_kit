@@ -31,6 +31,32 @@ class MaterialDateSheet {
   }
 }
 
+/// Native Material 3 date range picker.
+class MaterialDateRangeSheet {
+  static Future<DateTimeRange?> show({
+    required BuildContext context,
+    DateTimeRange? initialDateRange,
+    DateTime? minimumDate,
+    DateTime? maximumDate,
+    String? helpText,
+    String? cancelText,
+    String? confirmText,
+    Widget Function(BuildContext, Widget?)? builder,
+  }) {
+    return showDateRangePicker(
+      context: context,
+      firstDate: minimumDate ?? DateTime(1990),
+      lastDate: maximumDate ?? DateTime(2100),
+      initialDateRange: initialDateRange,
+      helpText: helpText,
+      cancelText: cancelText,
+      confirmText: confirmText,
+      builder:
+          builder ?? (ctx, child) => _wrapWithMaterialSurfaceTheme(ctx, child),
+    );
+  }
+}
+
 /// Applies [AdaptiveUiKitConfig.materialSurface]'s background + surfaceTint
 Widget _wrapWithMaterialSurfaceTheme(BuildContext ctx, Widget? child) {
   final theme = Theme.of(ctx);

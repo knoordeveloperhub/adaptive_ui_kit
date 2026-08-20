@@ -179,6 +179,13 @@ class _ExampleScreenState extends State<ExampleScreen> {
             ),
             const SizedBox(height: 16),
             _buildSection(
+              title: 'Date Range Picker',
+              description:
+                  'Selects a date range (Glass calendar on iOS/macOS, native on Android)',
+              onPressed: () => _showDateRangePicker(context),
+            ),
+            const SizedBox(height: 16),
+            _buildSection(
               title: 'Dialog',
               description:
                   'Shows a confirm dialog (Glass on iOS/macOS, Material on Android)',
@@ -407,6 +414,25 @@ class _ExampleScreenState extends State<ExampleScreen> {
     if (date != null) {
       _showSnackBar(
           'Selected date: ${date.toLocal().toString().split(' ')[0]}');
+    }
+  }
+
+  Future<void> _showDateRangePicker(BuildContext context) async {
+    final range = await AdaptiveDateTimePicker.showDateRange(
+      context: context,
+      initialDateRange: DateTimeRange(
+        start: DateTime.now(),
+        end: DateTime.now().add(const Duration(days: 7)),
+      ),
+      minimumDate: DateTime(2020),
+      maximumDate: DateTime(2035),
+      cancelText: 'Back',
+      confirmText: 'Select',
+    );
+    if (range != null) {
+      final start = range.start.toLocal().toString().split(' ')[0];
+      final end = range.end.toLocal().toString().split(' ')[0];
+      _showSnackBar('Selected range: $start - $end');
     }
   }
 

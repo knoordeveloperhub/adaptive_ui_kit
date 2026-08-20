@@ -586,3 +586,351 @@ class LiquidGlassDateTimeSheet {
     );
   }
 }
+
+class _GlassDateRangeCalendar extends StatefulWidget {
+  final DateTime? initialStart;
+  final DateTime? initialEnd;
+  final DateTime? minimumDate;
+  final DateTime? maximumDate;
+  final ValueChanged<DateTimeRange> onChanged;
+
+  const _GlassDateRangeCalendar({
+    required this.onChanged,
+    this.initialStart,
+    this.initialEnd,
+    this.minimumDate,
+    this.maximumDate,
+  });
+
+  @override
+  State<_GlassDateRangeCalendar> createState() =>
+      _GlassDateRangeCalendarState();
+}
+
+class _GlassDateRangeCalendarState extends State<_GlassDateRangeCalendar> {
+  late DateTime _visibleMonth;
+  DateTime? _start;
+  DateTime? _end;
+  bool _showMonthYearPicker = false;
+
+  static const _weekdayLabels = [
+    'SUN',
+    'MON',
+    'TUE',
+    'WED',
+    'THU',
+    'FRI',
+    'SAT'
+  ];
+  static const _monthLabels = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _start = _dateOnly(widget.initialStart);
+    _end = _dateOnly(widget.initialEnd);
+    _visibleMonth = DateTime((_start ?? _end ?? DateTime.now()).year,
+        (_start ?? _end ?? DateTime.now()).month, 1);
+  }
+
+  DateTime? _dateOnly(DateTime? date) =>
+      date == null ? null : DateTime(date.year, date.month, date.day);
+
+  bool _sameDay(DateTime? a, DateTime? b) =>
+      a != null &&
+      b != null &&
+      a.year == b.year &&
+      a.month == b.month &&
+      a.day == b.day;
+
+  bool _disabled(DateTime day) {
+    final date = _dateOnly(day)!;
+    return (widget.minimumDate != null &&
+            date.isBefore(_dateOnly(widget.minimumDate)!)) ||
+        (widget.maximumDate != null &&
+            date.isAfter(_dateOnly(widget.maximumDate)!));
+  }
+
+  void _select(DateTime day) {
+    if (_disabled(day)) return;
+    final date = _dateOnly(day)!;
+    setState(() {
+      if (_start == null || _end != null || date.isBefore(_start!)) {
+        _start = date;
+        _end = null;
+      } else {
+        _end = date;
+      }
+    });
+    if (_start != null && _end != null) {
+      widget.onChanged(DateTimeRange(start: _start!, end: _end!));
+    }
+  }
+
+  bool _inRange(DateTime day) =>
+      _start != null &&
+      _end != null &&
+      !day.isBefore(_start!) &&
+      !day.isAfter(_end!);
+
+  void _changeMonth(int delta) => setState(() {
+        _visibleMonth =
+            DateTime(_visibleMonth.year, _visibleMonth.month + delta, 1);
+      });
+
+  @override
+  Widget build(BuildContext context) {
+    final tint = AdaptiveUiKitConfig.glass.tintColor;
+    final firstWeekday =
+        DateTime(_visibleMonth.year, _visibleMonth.month, 1).weekday % 7;
+    final daysInMonth =
+        DateTime(_visibleMonth.year, _visibleMonth.month + 1, 0).day;
+    const cellSize = 40.0;
+    const rowGap = 6.0;
+    const gridHeight = 6 * cellSize + 5 * rowGap;
+
+    Widget dayCell(int dayNumber) {
+      final day = DateTime(_visibleMonth.year, _visibleMonth.month, dayNumber);
+      final selected = _sameDay(day, _start) || _sameDay(day, _end);
+      final inRange = _inRange(day);
+      final disabled = _disabled(day);
+      final today = _sameDay(day, DateTime.now());
+      return GestureDetector(
+        onTap: disabled ? null : () => _select(day),
+        child: Center(
+          child: Container(
+            width: cellSize,
+            height: cellSize,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: selected
+                  ? tint
+                  : inRange
+                      ? tint.withValues(alpha: 0.22)
+                      : Colors.transparent,
+            ),
+            child: Text(
+              '$dayNumber',
+              style: TextStyle(
+                fontSize: 19,
+                fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+                color: disabled
+                    ? GlassColors.textMuted(context).withValues(alpha: 0.4)
+                    : selected
+                        ? Colors.white
+                        : today
+                            ? tint
+                            : GlassColors.text(context),
+              ),
+            ),
+          ),
+        ),
+      );
+    }
+
+    final cells = <Widget>[
+      ...List.filled(firstWeekday, const SizedBox.shrink())
+    ];
+    for (var day = 1; day <= daysInMonth; day++) {
+      cells.add(dayCell(day));
+    }
+    while (cells.length % 7 != 0) {
+      cells.add(const SizedBox.shrink());
+    }
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(14, 10, 14, 14),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => setState(
+                    () => _showMonthYearPicker = !_showMonthYearPicker),
+                child: Row(
+                  children: [
+                    Text(
+                        '${_monthLabels[_visibleMonth.month - 1]} ${_visibleMonth.year}',
+                        style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w700,
+                            color: _showMonthYearPicker
+                                ? tint
+                                : GlassColors.text(context))),
+                    const SizedBox(width: 4),
+                    Icon(CupertinoIcons.chevron_forward, size: 18, color: tint),
+                  ],
+                ),
+              ),
+              const Spacer(),
+              if (!_showMonthYearPicker) ...[
+                _GlassCalendarNavArrow(
+                    icon: CupertinoIcons.chevron_left,
+                    onTap: () => _changeMonth(-1)),
+                const SizedBox(width: 10),
+                _GlassCalendarNavArrow(
+                    icon: CupertinoIcons.chevron_right,
+                    onTap: () => _changeMonth(1)),
+              ],
+            ],
+          ),
+          AnimatedSize(
+            duration: const Duration(milliseconds: 220),
+            child: _showMonthYearPicker
+                ? SizedBox(
+                    height: 232,
+                    child: _GlassMonthYearWheel(
+                      month: _visibleMonth.month,
+                      year: _visibleMonth.year,
+                      minimumDate: widget.minimumDate,
+                      maximumDate: widget.maximumDate,
+                      onChanged: (month, year) => setState(
+                          () => _visibleMonth = DateTime(year, month, 1)),
+                    ),
+                  )
+                : Column(
+                    children: [
+                      const SizedBox(height: 14),
+                      Row(
+                        children: _weekdayLabels
+                            .map(
+                              (label) => Expanded(
+                                child: Center(
+                                  child: Text(
+                                    label,
+                                    style: TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      letterSpacing: 0.4,
+                                      color: GlassColors.textMuted(context),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                      const SizedBox(height: 6),
+                      SizedBox(
+                        height: gridHeight,
+                        child: Column(children: [
+                          for (var row = 0; row < cells.length ~/ 7; row++)
+                            Expanded(
+                                child: Row(children: [
+                              for (var col = 0; col < 7; col++)
+                                Expanded(child: cells[row * 7 + col])
+                            ]))
+                        ]),
+                      ),
+                    ],
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class LiquidGlassDateRangeSheet {
+  static Future<DateTimeRange?> show({
+    required BuildContext context,
+    DateTimeRange? initialDateRange,
+    DateTime? minimumDate,
+    DateTime? maximumDate,
+    ValueChanged<DateTimeRange>? onChanged,
+    String? cancelText,
+    String? confirmText,
+  }) {
+    DateTimeRange? selected = initialDateRange;
+    return showDialog<DateTimeRange>(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: Colors.black.withValues(alpha: 0.20),
+      builder: (dialogCtx) {
+        final isLandscape = ResponsiveLayout.isLandscape(dialogCtx);
+        final media = MediaQuery.of(dialogCtx);
+        final safeHeight = media.size.height - media.padding.vertical;
+        final calendar = _GlassDateRangeCalendar(
+          initialStart: initialDateRange?.start,
+          initialEnd: initialDateRange?.end,
+          minimumDate: minimumDate,
+          maximumDate: maximumDate,
+          onChanged: (range) {
+            selected = range;
+            onChanged?.call(range);
+          },
+        );
+        final panel = ConstrainedBox(
+          constraints: BoxConstraints(
+              maxWidth: ResponsiveLayout.sheetMaxWidth(dialogCtx)),
+          child: LiquidGlassPanel(
+            radius: AdaptiveUiKitConfig.glass.sheetRadius,
+            padding: const EdgeInsets.fromLTRB(4, 8, 4, 4),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                isLandscape
+                    ? SizedBox(
+                        width: ResponsiveLayout.sheetMaxWidth(dialogCtx),
+                        height: (safeHeight - 110).clamp(120.0, safeHeight),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: SizedBox(
+                              width:
+                                  ResponsiveLayout.sheetMaxWidth(dialogCtx) - 8,
+                              child: calendar),
+                        ),
+                      )
+                    : calendar,
+              ],
+            ),
+          ),
+        );
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: () => Navigator.of(dialogCtx).pop(selected),
+          child: SafeArea(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 24,
+                  ),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: constraints.maxHeight - 48,
+                    ),
+                    child: Center(
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () {},
+                        child: panel,
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        );
+      },
+    );
+  }
+}

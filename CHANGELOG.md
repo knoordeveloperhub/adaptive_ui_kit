@@ -1,3 +1,6 @@
+## 0.2.3
+- DateRange Picker added for IOS and Android
+
 ## 0.1.3
 - Action Sheet card text made responsive
 

@@ -41,6 +41,7 @@ No platform checks. No duplicate widgets.
 - Adaptive Dialog
 - Adaptive Action Sheet
 - Adaptive Date Picker
+- Adaptive Date Range Picker
 - Adaptive Time Picker
 - Adaptive Multi Select
 - Adaptive Navigation Bar
@@ -58,7 +59,7 @@ To integrate Adaptive UI Kit into your Flutter project:
 
 ```yaml
 dependencies:
-  adaptive_ui_kit: ^0.1.3
+  adaptive_ui_kit: ^0.2.3
 ```
 
 2. Import the package:
@@ -177,6 +178,16 @@ Glass UI   Material UI
 
 
 ### Date Picker
+
+```dart
+final range = await AdaptiveDateTimePicker.showDateRange(
+  context: context,
+  initialDateRange: DateTimeRange(
+    start: DateTime.now(),
+    end: DateTime.now().add(const Duration(days: 7)),
+  ),
+);
+```
  
 | <img src="https://raw.githubusercontent.com/knoordeveloperhub/adaptive_ui_kit/main/assets/screenshots/date_picker_glass.png" width="220"> | <img src="https://raw.githubusercontent.com/knoordeveloperhub/adaptive_ui_kit/main/assets/screenshots/date_picker_material.png" width="220"> |
 
