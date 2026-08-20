@@ -59,7 +59,7 @@ To integrate Adaptive UI Kit into your Flutter project:
 
 ```yaml
 dependencies:
-  adaptive_ui_kit: ^0.2.3
+  adaptive_ui_kit: ^0.1.4
 ```
 
 2. Import the package:
