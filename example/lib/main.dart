@@ -429,6 +429,7 @@ class _ExampleScreenState extends State<ExampleScreen> {
       cancelText: 'Back',
       confirmText: 'Select',
     );
+
     if (range != null) {
       final start = range.start.toLocal().toString().split(' ')[0];
       final end = range.end.toLocal().toString().split(' ')[0];

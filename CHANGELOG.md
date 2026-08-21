@@ -1,3 +1,6 @@
+## 0.1.5
+- Bug Fixed
+
 ## 0.1.4
 - DateRange Picker added for IOS and Android
 

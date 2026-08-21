@@ -59,7 +59,7 @@ To integrate Adaptive UI Kit into your Flutter project:
 
 ```yaml
 dependencies:
-  adaptive_ui_kit: ^0.1.4
+  adaptive_ui_kit: ^0.1.5
 ```
 
 2. Import the package:
@@ -122,6 +122,7 @@ Widget build(BuildContext context) {
 
 Notes:
 - For Material date/time pickers you can pass `helpText`, `cancelText`, `confirmText`, and a `builder` for custom theme wrapping.
+- `showDateRange` also exposes Flutter's official Material options such as `initialEntryMode`, `saveText`, input labels/errors, `locale`, barrier settings, keyboard type, custom entry-mode icons, and `selectableDayPredicate`.
 - Widgets take precedence: if `titleWidget`/`messageWidget`/`child` are provided they'll be used instead of string fallbacks.
 
 ---

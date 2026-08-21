@@ -854,14 +854,16 @@ class LiquidGlassDateRangeSheet {
     DateTime? minimumDate,
     DateTime? maximumDate,
     ValueChanged<DateTimeRange>? onChanged,
+    bool barrierDismissible = true,
+    Color? barrierColor,
     String? cancelText,
     String? confirmText,
   }) {
     DateTimeRange? selected = initialDateRange;
     return showDialog<DateTimeRange>(
       context: context,
-      barrierDismissible: false,
-      barrierColor: Colors.black.withValues(alpha: 0.20),
+      barrierDismissible: barrierDismissible,
+      barrierColor: barrierColor ?? Colors.black.withValues(alpha: 0.20),
       builder: (dialogCtx) {
         final isLandscape = ResponsiveLayout.isLandscape(dialogCtx);
         final media = MediaQuery.of(dialogCtx);
@@ -904,7 +906,9 @@ class LiquidGlassDateRangeSheet {
         );
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
-          onTap: () => Navigator.of(dialogCtx).pop(selected),
+          onTap: barrierDismissible
+              ? () => Navigator.of(dialogCtx).pop(selected)
+              : null,
           child: SafeArea(
             child: LayoutBuilder(
               builder: (context, constraints) {
